@@ -184,8 +184,8 @@ def load_data(dataset):
         # Check if dataset is in the data directory.
         new_path = os.path.join(
             os.path.split(__file__)[0],
-            "..",
-            "data",
+            #"..",
+            "datasets",
             dataset
         )
         if os.path.isfile(new_path) or data_file == 'mnist.pkl.gz':

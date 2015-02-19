@@ -76,12 +76,12 @@ def speed():
     expected_times_gpu = numpy.asarray([3.0, 7.55523491, 18.99226785,
                                         5.8, 21.5,
                                         11.8, 47.9, 290.1, 255.4, 72.4])
-    expected_times_64 = [s for idx, s in enumerate(expected_times_64)
-                         if to_exec[idx]]
+    '''expected_times_64 = [s for idx, s in enumerate(expected_times_64)
+                        if to_exec[idx]]
     expected_times_32 = [s for idx, s in enumerate(expected_times_32)
                          if to_exec[idx]]
     expected_times_gpu = [s for idx, s in enumerate(expected_times_gpu)
-                          if to_exec[idx]]
+                          if to_exec[idx]]'''
 
     def time_test(m, l, idx, f, **kwargs):
         if not to_exec[idx]:
@@ -131,7 +131,6 @@ def speed():
              'nepochs': 1,
              # 60 is recommended
              'savemodel': False}
-        time_test(m, l, 9, rnnslu.main, param=s)
         return numpy.asarray(l)
 
     #test in float64 in FAST_RUN mode on the cpu
