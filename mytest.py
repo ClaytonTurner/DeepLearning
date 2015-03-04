@@ -59,12 +59,23 @@ def readSparse():
     # data = [a,b,c]
     # indices = [x,y,z]
     # datapoint a is on row x
+
+    # Row = Patient
     dataArray = []
-    data = np.asarray(dataArray)
     indicesArray = [] 
+    for line in dataLines:
+        subjectid,cui,cuicount = line.split("\t")
+        if subjectid not in dataArray:
+            indicesArray.append(subjectid)
+        dataArray.append(cuicount.strip())
+    data = np.asarray(dataArray)
     indices = np.asarray(indicesArray)
+
     indptrArray = []
+
     indptr = np.asarray(indptrArray)
+
+
     
     # For shape of array
     rows = len(instance)
