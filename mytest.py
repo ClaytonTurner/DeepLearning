@@ -114,7 +114,18 @@ def readSparse():
     data = np.asarray(dataArray)
     indices = np.asarray(indicesArray)
 
+    # we need to sort by cuis so we can figure out indptr
+    # since it deals with columns 
+    # not efficient but it's necessary
     indptrArray = []
+    import operator
+    newDataList = []
+    for line in dataLines:
+        tup = line.split("\t")
+        tup[2] = tup[2].strip()
+        newDataList.append(tup)
+    newDataList.sort(key = operator.itemgetter(1,0))
+    print newDataList
 
     indptr = np.asarray(indptrArray)
 
@@ -125,5 +136,5 @@ def readSparse():
     m = sp.csc_matrix((data,indices,indptr), shape=(rows,cols))
     print m.toarray()
    
-sortSparseData() 
-#readSparse()
+#sortSparseData() 
+readSparse()
