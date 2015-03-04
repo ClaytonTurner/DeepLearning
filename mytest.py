@@ -104,20 +104,24 @@ def readSparse():
 
     dataArray = []
     indicesArray = [] 
+    subjectidArray = []
+    subjectctr = -1
     for line in dataLines:
         subjectid,cui,cuicount = line.split("\t")
         cuicount = cuicount.strip()
-        if subjectid not in indicesArray:
+        if subjectid not in subjectidArray:
             # so we have finished a patient
-            indicesArray.append(subjectid)
-        dataArray.append(cuicount)
+            subjectidArray.append(subjectid)
+            subjectctr += 1
+        dataArray.append(float(cuicount))
+        indicesArray.append(subjectctr)
     data = np.asarray(dataArray)
     indices = np.asarray(indicesArray)
 
     # we need to sort by cuis so we can figure out indptr
     # since it deals with columns 
     # not efficient but it's necessary
-    indptrArray = []
+    
     import operator
     newDataList = []
     for line in dataLines:
@@ -125,10 +129,29 @@ def readSparse():
         tup[2] = tup[2].strip()
         newDataList.append(tup)
     newDataList.sort(key = operator.itemgetter(1,0))
-    print newDataList
+    #print newDataList
+
+    indptrArray = [0]
+    lastcui = '1'
+    sliceend = 0
+    for record in newDataList:
+        currentcui = record[1]
+        #print lastcui + ' ' + currentcui
+        if lastcui == currentcui:
+            sliceend += 1
+        else:
+            indptrArray.append(sliceend)
+            lastcui = str(int(lastcui)+1)
+    indptrArray.append(sliceend)
+
 
     indptr = np.asarray(indptrArray)
-
+    print "data: "
+    print data
+    print "indices: "
+    print indices
+    print "indptr: "
+    print indptr
 
     
     
