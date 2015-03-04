@@ -93,8 +93,8 @@ def readSparse():
     # 1 to 1 relationship with data and indices
     # data = [a,b,c]
     # indices = [x,y,z]
-    # datapoint a is on col x
-    # indptr is a slice array for rows
+    # datapoint a is on row x
+    # indptr is a slice array for columns
 
     # Row = Patient
 
@@ -108,7 +108,7 @@ def readSparse():
         subjectid,cui,cuicount = line.split("\t")
         cuicount = cuicount.strip()
         if subjectid not in indicesArray:
-            # so we have finished a patient, so let's set up the 
+            # so we have finished a patient
             indicesArray.append(subjectid)
         dataArray.append(cuicount)
     data = np.asarray(dataArray)
@@ -122,7 +122,7 @@ def readSparse():
     
     
     
-    m = sp.csr_matrix((data,indices,indptr), shape=(rows,cols))
+    m = sp.csc_matrix((data,indices,indptr), shape=(rows,cols))
     print m.toarray()
    
 sortSparseData() 
