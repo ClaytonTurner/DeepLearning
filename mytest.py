@@ -62,6 +62,11 @@ def readSparse():
     # indptr is a slice array for columns
 
     # Row = Patient
+    
+    # For shape of array
+    rows = len(instance)
+    cols = len(attributes)
+
     dataArray = []
     indicesArray = [] 
     for line in dataLines:
@@ -78,9 +83,7 @@ def readSparse():
 
 
     
-    # For shape of array
-    rows = len(instance)
-    cols = len(attributes)
+    
     
     m = sp.csc_matrix((data,indices,indptr), shape=(rows,cols))
     print m.toarray()
