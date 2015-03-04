@@ -59,6 +59,7 @@ def readSparse():
     # data = [a,b,c]
     # indices = [x,y,z]
     # datapoint a is on row x
+    # indptr is a slice array for columns
 
     # Row = Patient
     dataArray = []
