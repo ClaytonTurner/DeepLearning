@@ -99,13 +99,15 @@ def readSparse():
     # Row = Patient
 
     # For shape of array
-    rows = len(instance)
+    rows = len(instance)-1
     cols = len(attributes)
 
     dataArray = []
     indicesArray = [] 
     subjectidArray = []
     subjectctr = -1
+    indptrctr = 0
+    indptrArray = []
     for line in dataLines:
         subjectid,cui,cuicount = line.split("\t")
         cuicount = cuicount.strip()
@@ -113,8 +115,14 @@ def readSparse():
             # so we have finished a patient
             subjectidArray.append(subjectid)
             subjectctr += 1
+            indptrArray.append(indptrctr)
         dataArray.append(float(cuicount))
-        indicesArray.append(subjectctr)
+        #indicesArray.append(subjectctr)
+        indicesArray.append(int(cui)-1)
+        indptrctr += 1
+    indptrArray.append(indptrctr)
+
+        
     data = np.asarray(dataArray)
     indices = np.asarray(indicesArray)
 
@@ -122,7 +130,7 @@ def readSparse():
     # since it deals with columns 
     # not efficient but it's necessary
     
-    import operator
+    '''import operator
     newDataList = []
     for line in dataLines:
         tup = line.split("\t")
@@ -142,7 +150,7 @@ def readSparse():
         else:
             indptrArray.append(sliceend)
             lastcui = str(int(lastcui)+1)
-    indptrArray.append(sliceend)
+    indptrArray.append(sliceend)'''
 
 
     indptr = np.asarray(indptrArray)
@@ -156,7 +164,7 @@ def readSparse():
     
     
     
-    m = sp.csc_matrix((data,indices,indptr), shape=(rows,cols))
+    m = sp.csr_matrix((data,indices,indptr), shape=(rows,cols))
     print m.toarray()
    
 #sortSparseData() 
