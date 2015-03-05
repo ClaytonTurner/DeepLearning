@@ -32,10 +32,11 @@ def run():
     '''
     SdA.test_SdA()
 
-def sortSparseData():
-    os.chdir(os.path.join("datasets","example_notes"))
-    dataString = "data.txt"
-    outfile = "outdata.txt"
+def sortSparseData(dataString):
+    #os.chdir(os.path.join("datasets","example_notes")) for testing
+    os.chdir(os.path.join("sle_data")) # for sle data
+    #dataString = "data.txt"
+    outfile = "sorted_"+dataString
     dataFile = open(dataString,"r")
     dataLines = dataFile.readlines()
     dataFile.close()
@@ -77,7 +78,8 @@ def readSparse():
     
     # Start at repo name: here it's DeepLearning
     # Change directory to DeepLearning/datasets/example_notes
-    os.chdir(os.path.join("datasets","example_notes"))
+    #os.chdir(os.path.join("datasets","example_notes")) for example data
+    os.chdir(os.path.join("sle_data")) # for sle data
     
     # Read in data files
     attrFile = open(attributesString,"r")
@@ -167,5 +169,6 @@ def readSparse():
     m = sp.csr_matrix((data,indices,indptr), shape=(rows,cols))
     print m.toarray()
    
-#sortSparseData() 
-readSparse()
+sortSparseData("alldata.txt")
+sortSparseData("golddata.txt") 
+#readSparse()
