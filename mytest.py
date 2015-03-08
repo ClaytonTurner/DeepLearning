@@ -70,8 +70,8 @@ def sortSparseData(dataString):
 
 def merge_all_and_gold():
     # Names of input files output by cTAKES
-    attributesString = "attributes.txt"
-    instancesString = "instance.txt"
+    attributesString = "allattributes.txt"
+    instancesString = "allinstance.txt"
     dataString = "sorted_alldata.txt" # this should be the output of sortSparseData
     g_attributesString = "goldattributes.txt"
     g_instancesString = "goldinstance.txt"
