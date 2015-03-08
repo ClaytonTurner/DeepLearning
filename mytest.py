@@ -69,7 +69,6 @@ def sortSparseData(dataString):
     out.close()
 
 def merge_all_and_gold():
-    os.chdir(os.path.join("sle_data")) # for sle data
     # Names of input files output by cTAKES
     attributesString = "attributes.txt"
     instancesString = "instance.txt"
@@ -79,8 +78,8 @@ def merge_all_and_gold():
     g_dataString = "sorted_golddata.txt"
     # Start at repo name: here it's DeepLearning
     # Change directory to DeepLearning/datasets/example_notes
-    os.chdir(os.path.join("datasets","example_notes"))# for example data
-    #os.chdir(os.path.join("sle_data")) # for sle data
+    #os.chdir(os.path.join("datasets","example_notes"))# for example data
+    os.chdir(os.path.join("sle_data")) # for sle data
     
     # Read in data files
     attrFile = open(attributesString,"r")
