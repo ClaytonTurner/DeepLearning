@@ -113,7 +113,7 @@ def merge_all_and_gold():
     for i in range(len(attributes)):
 	curr = attributes[i]
 	
-	while(curr > cuis_in_gold_only[mykey]):#check if we need to insert a goldattribute first. While in case we have multiple in a row we need to do
+	while(curr > cuis_in_gold_only[gold_check_key]):#check if we need to insert a goldattribute first. While in case we have multiple in a row we need to do
 		for j in range(len(dataLines)):#let's increment every cui that comes after that cui	
 			a,b,c = dataLines[j].split("\t")
 			if int(b) > i: #if we have a datapoint whom's cui index comes after curr
