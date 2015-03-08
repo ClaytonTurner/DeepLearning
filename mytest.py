@@ -48,7 +48,7 @@ def sortSparseData(dataString):
         subjectid,cui,cuicount = line.split("\t")
         cuicount = cuicount.strip()
         if subjectid not in indicesArray:
-            sorthelper.sort(key=lambda tup: tup[1])
+            sorthelper.sort(key=lambda tup: int(tup[1]))
             string = "\n".join(str(s) for s in sorthelper)
             string = string+'\n'
             dataString += string
@@ -68,18 +68,78 @@ def sortSparseData(dataString):
     out.write(dataString[1:].strip())
     out.close()
 
+def merge_all_and_gold():
+    # Names of input files output by cTAKES
+    attributesString = "attributes.txt"
+    instancesString = "instance.txt"
+    dataString = "sorted_alldata.txt" # this should be the output of sortSparseData
+    g_attributesString = "goldattributes.txt"
+    g_instancesString = "goldinstance.txt"
+    g_dataString = "sorted_golddata.txt"
+    # Start at repo name: here it's DeepLearning
+    # Change directory to DeepLearning/datasets/example_notes
+    os.chdir(os.path.join("datasets","example_notes"))# for example data
+    #os.chdir(os.path.join("sle_data")) # for sle data
+    
+    # Read in data files
+    attrFile = open(attributesString,"r")
+    attributes = attrFile.read().splitlines()
+    attrFile.close()
+    instanceFile = open(instancesString,"r")
+    instance = instanceFile.readlines()
+    instanceFile.close()
+    dataFile = open(dataString,"r")
+    dataLines = dataFile.readlines()
+    dataFile.close()
+    g_attrFile = open(g_attributesString,"r")
+    g_attributes = g_attrFile.read().splitlines()
+    attrFile.close()
+    g_instanceFile = open(g_instancesString,"r")
+    g_instance = g_instanceFile.readlines()
+    g_instanceFile.close()
+    g_dataFile = open(g_dataString,"r")
+    g_dataLines = g_dataFile.readlines()
+    g_dataFile.close()
+    final_attr = []
+    
+    for i in range(len(attributes)):
+	curr = attributes[i]
+	if curr in g_attributes:
+		cui_row_in_gold = g_attributes.index(curr)
+		# so let's go in data and update the reference to the cui
+		for j in range(len(g_dataLines)):
+			rec = g_dataLines[j]
+			gold_data_cui_num = rec.split("\t")[1]
+			cui = g_attributes[gold_data_cui_num]
+			if cui == curr:
+				a,b,c = g_dataLines.split("\t")
+				g_dataLines[j] = "\t".join([a,i,c])
+
+		#g_attributes.remove(curr)
+	else: # curr not in g_attributes
+		for j in range(len(g_dataLines)):
+			a,b,c = g_dataLines.split("\t")
+			if int(b) > i: #if we have a datapoint whom's cui index comes after curr
+				b = str(int(b)+1)
+			g_dataLines[j] = "\t".join([a,b,c])
+
+	final_attr.append(curr)
+		
+    for i in range(len(g_attributes)): # for any attributes only in the gold (should be small)
+	i = i	
+
 def readSparse():
     # Ref: http://www.deeplearning.net/software/theano/library/sparse/index.html#libdoc-sparse
     
-    # Names of input files output by cTAKES
+     # Names of input files output by cTAKES
     attributesString = "attributes.txt"
     instancesString = "instance.txt"
     dataString = "outdata.txt" # this should be the output of sortSparseData
     
     # Start at repo name: here it's DeepLearning
     # Change directory to DeepLearning/datasets/example_notes
-    #os.chdir(os.path.join("datasets","example_notes")) for example data
-    os.chdir(os.path.join("sle_data")) # for sle data
+    os.chdir(os.path.join("datasets","example_notes"))# for example data
+    #os.chdir(os.path.join("sle_data")) # for sle data
     
     # Read in data files
     attrFile = open(attributesString,"r")
@@ -92,7 +152,7 @@ def readSparse():
     dataLines = dataFile.readlines()
     dataFile.close()
     
-    # 1 to 1 relationship with data and indices
+   # 1 to 1 relationship with data and indices
     # data = [a,b,c]
     # indices = [x,y,z]
     # datapoint a is on row x
@@ -131,29 +191,6 @@ def readSparse():
     # we need to sort by cuis so we can figure out indptr
     # since it deals with columns 
     # not efficient but it's necessary
-    
-    '''import operator
-    newDataList = []
-    for line in dataLines:
-        tup = line.split("\t")
-        tup[2] = tup[2].strip()
-        newDataList.append(tup)
-    newDataList.sort(key = operator.itemgetter(1,0))
-    #print newDataList
-
-    indptrArray = [0]
-    lastcui = '1'
-    sliceend = 0
-    for record in newDataList:
-        currentcui = record[1]
-        #print lastcui + ' ' + currentcui
-        if lastcui == currentcui:
-            sliceend += 1
-        else:
-            indptrArray.append(sliceend)
-            lastcui = str(int(lastcui)+1)
-    indptrArray.append(sliceend)'''
-
 
     indptr = np.asarray(indptrArray)
     print "data: "

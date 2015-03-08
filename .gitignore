@@ -1,2 +1,3 @@
 *.pyc
 sle_data/
+*.nohup.*
