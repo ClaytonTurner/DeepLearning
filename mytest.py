@@ -104,7 +104,7 @@ def merge_all_and_gold():
 
     cuis_in_gold_only = []
     import subprocess
-    proc = subprocess.Popen(["comm", "-13", "allattributes.txt","goldattributes.txt"], stdout=subprocess.PIPE, shell=True)
+    proc = subprocess.Popen(["comm -13 allattributes.txt goldattributes.txt"], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
     cuis_in_gold_only = out.split("\n")
     cuis_in_gold_only.append("D99999999999999") #no cui can come before this - clean way to circumvent conditional
@@ -119,7 +119,7 @@ def merge_all_and_gold():
 			if int(b) > i: #if we have a datapoint whom's cui index comes after curr
 				b = str(int(b)+1)
 			dataLines[j] = "\t".join([a,b,c])
-		final_attr.append(cuis_in_gold_only[mykey])	
+		final_attr.append(cuis_in_gold_only[gold_check_key])	
 		gold_check_key += 1 # eases conditioal use
 	if curr in g_attributes:
 		cui_row_in_gold = g_attributes.index(curr)
