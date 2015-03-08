@@ -101,9 +101,26 @@ def merge_all_and_gold():
     g_dataLines = g_dataFile.readlines()
     g_dataFile.close()
     final_attr = []
-    
+
+    cuis_in_gold_only = []
+    import subprocess
+    proc = subprocess.Popen(["comm", "-13", "allattributes.txt","goldattributes.txt"], stdout=subprocess.PIPE, shell=True)
+    (out, err) = proc.communicate()
+    cuis_in_gold_only = out.split("\n")
+    cuis_in_gold_only.append("D99999999999999") #no cui can come before this - clean way to circumvent conditional
+    gold_check_key = 0
+
     for i in range(len(attributes)):
 	curr = attributes[i]
+	
+	while(curr > cuis_in_gold_only[mykey]):#check if we need to insert a goldattribute first. While in case we have multiple in a row we need to do
+		for j in range(len(dataLines)):#let's increment every cui that comes after that cui	
+			a,b,c = dataLines[j].split("\t")
+			if int(b) > i: #if we have a datapoint whom's cui index comes after curr
+				b = str(int(b)+1)
+			dataLines[j] = "\t".join([a,b,c])
+		final_attr.append(cuis_in_gold_only[mykey])	
+		gold_check_key += 1 # eases conditioal use
 	if curr in g_attributes:
 		cui_row_in_gold = g_attributes.index(curr)
 		# so let's go in data and update the reference to the cui
@@ -116,17 +133,24 @@ def merge_all_and_gold():
 				g_dataLines[j] = "\t".join([a,i,c])
 
 		#g_attributes.remove(curr)
-	else: # curr not in g_attributes
+	else: # curr not in g_attributes	
 		for j in range(len(g_dataLines)):
-			a,b,c = g_dataLines.split("\t")
+			a,b,c = g_dataLines[j].split("\t")
 			if int(b) > i: #if we have a datapoint whom's cui index comes after curr
 				b = str(int(b)+1)
 			g_dataLines[j] = "\t".join([a,b,c])
 
 	final_attr.append(curr)
+    m_attr_out = open("merged_attributes.txt","w")
+    m_attr_out.write("\n".join(final_attr))
+    m_attr_out.close()
+    m_data_out = open("","w")
+    m_data_out.write("\n".join(dataLines))
+    m_data_out.close()
+    m_gdata_out = open("","w")
+    m_gdata_out.write("\n".join(g_dataLines)
+    m_gdata_out.close()
 		
-    for i in range(len(g_attributes)): # for any attributes only in the gold (should be small)
-	i = i	
 
 def readSparse():
     # Ref: http://www.deeplearning.net/software/theano/library/sparse/index.html#libdoc-sparse
