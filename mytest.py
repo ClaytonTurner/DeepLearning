@@ -230,6 +230,7 @@ def readSparse():
     m = sp.csr_matrix((data,indices,indptr), shape=(rows,cols))
     print m.toarray()
    
-sortSparseData("alldata.txt")
-sortSparseData("golddata.txt") 
+#sortSparseData("alldata.txt")
+#sortSparseData("golddata.txt") 
+merge_all_and_gold()
 #readSparse()
