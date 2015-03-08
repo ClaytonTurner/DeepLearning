@@ -35,7 +35,7 @@ def run():
 def sortSparseData(dataString):
     #os.chdir(os.path.join("datasets","example_notes")) for testing
     os.chdir(os.path.join("sle_data")) # for sle data
-    #dataString = "data.txt"
+   #dataString = "data.txt"
     outfile = "sorted_"+dataString
     dataFile = open(dataString,"r")
     dataLines = dataFile.readlines()
@@ -69,6 +69,7 @@ def sortSparseData(dataString):
     out.close()
 
 def merge_all_and_gold():
+    os.chdir(os.path.join("sle_data")) # for sle data
     # Names of input files output by cTAKES
     attributesString = "attributes.txt"
     instancesString = "instance.txt"
@@ -148,7 +149,7 @@ def merge_all_and_gold():
     m_data_out.write("\n".join(dataLines))
     m_data_out.close()
     m_gdata_out = open("","w")
-    m_gdata_out.write("\n".join(g_dataLines)
+    m_gdata_out.write("\n".join(g_dataLines))
     m_gdata_out.close()
 		
 
