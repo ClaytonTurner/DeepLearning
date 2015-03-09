@@ -195,10 +195,10 @@ def gold_cuis_only_merge():
 	goldcuiindex += 1
     for record in dataLines:
 	sid,cuiindex,cuiamount = record.split("\t")
-	cui = attributes[cuiindex-1]
+	cui = attributes[int(cuiindex)-1]
 	if cui in goldcuis:
-		cuiindex = goldcuis[cuiindex]
-		new_unlabeled_data.append("\t".join([sid,cuiindex,cuiamount]))
+		cuiindex = goldcuis[cui]
+		new_unlabeled_data.append("\t".join([sid,str(cuiindex),cuiamount]))
     alldata_out = open("alldata_gold_cuis_only.txt","w")
     alldata_out.write("".join(new_unlabeled_data))
     alldata_out.close()
