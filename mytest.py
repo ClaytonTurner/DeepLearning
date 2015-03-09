@@ -69,7 +69,7 @@ def sortSparseData(dataString):
     out.close()
 
 def merge_all_and_gold():
-    # Names of input files output by cTAKES
+     # Names of input files output by cTAKES
     attributesString = "allattributes.txt"
     instancesString = "allinstance.txt"
     dataString = "sorted_alldata.txt" # this should be the output of sortSparseData
@@ -101,7 +101,7 @@ def merge_all_and_gold():
     g_dataLines = g_dataFile.readlines()
     g_dataFile.close()
     final_attr = []
-
+    print len(g_attributes)
     cuis_in_gold_only = []
     import subprocess
     proc = subprocess.Popen(["comm -13 allattributes.txt goldattributes.txt"], stdout=subprocess.PIPE, shell=True)
@@ -126,7 +126,8 @@ def merge_all_and_gold():
 		# so let's go in data and update the reference to the cui
 		for j in range(len(g_dataLines)):
 			rec = g_dataLines[j]
-			gold_data_cui_num = rec.split("\t")[1]
+			gold_data_cui_num = int(rec.split("\t")[1])-1 # -1 because cuis start at 1, not 0
+			print str(gold_data_cui_num)+ " " + str(j)
 			cui = g_attributes[gold_data_cui_num]
 			if cui == curr:
 				a,b,c = g_dataLines.split("\t")
@@ -151,6 +152,58 @@ def merge_all_and_gold():
     m_gdata_out.write("\n".join(g_dataLines))
     m_gdata_out.close()
 		
+
+def gold_cuis_only_merge():
+    #This function assumes gold cuis are all we want
+    # Names of input files output by cTAKES
+    attributesString = "allattributes.txt"
+    instancesString = "allinstance.txt"
+    dataString = "sorted_alldata.txt" # this should be the output of sortSparseData
+    g_attributesString = "goldattributes.txt"
+    g_instancesString = "goldinstance.txt"
+    g_dataString = "sorted_golddata.txt"
+    # Start at repo name: here it's DeepLearning
+    # Change directory to DeepLearning/datasets/example_notes
+    #os.chdir(os.path.join("datasets","example_notes"))# for example data
+    os.chdir(os.path.join("sle_data")) # for sle data
+    
+    # Read in data files
+    attrFile = open(attributesString,"r")
+    attributes = attrFile.read().splitlines()
+    attrFile.close()
+    instanceFile = open(instancesString,"r")
+    instance = instanceFile.readlines()
+    instanceFile.close()
+    dataFile = open(dataString,"r")
+    dataLines = dataFile.readlines()
+    dataFile.close()
+    g_attrFile = open(g_attributesString,"r")
+    g_attributes = g_attrFile.read().splitlines()
+    attrFile.close()
+    g_instanceFile = open(g_instancesString,"r")
+    g_instance = g_instanceFile.readlines()
+    g_instanceFile.close()
+    g_dataFile = open(g_dataString,"r")
+    g_dataLines = g_dataFile.readlines()
+    g_dataFile.close()
+
+    new_unlabeled_data = []
+    goldcuis = dict() #so we have a quick lookup speed
+    goldcuiindex = 1
+    for line in g_attributes:
+	goldcuis[line.strip()] = goldcuiindex
+	goldcuiindex += 1
+    for record in dataLines:
+	sid,cuiindex,cuiamount = record.split("\t")
+	cui = attributes[cuiindex-1]
+	if cui in goldcuis:
+		cuiindex = goldcuis[cuiindex]
+		new_unlabeled_data.append("\t".join([sid,cuiindex,cuiamount]))
+    alldata_out = open("alldata_gold_cuis_only.txt","w")
+    alldata_out.write("".join(new_unlabeled_data))
+    alldata_out.close()
+    
+
 
 def readSparse():
     # Ref: http://www.deeplearning.net/software/theano/library/sparse/index.html#libdoc-sparse
@@ -232,5 +285,6 @@ def readSparse():
    
 #sortSparseData("alldata.txt")
 #sortSparseData("golddata.txt") 
-merge_all_and_gold()
+#merge_all_and_gold()
 #readSparse()
+gold_cuis_only_merge()
