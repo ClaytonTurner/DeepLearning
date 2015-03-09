@@ -110,9 +110,9 @@ def merge_all_and_gold():
     cuis_in_gold_only.append("D99999999999999") #no cui can come before this - clean way to circumvent conditional
     gold_check_key = 0
 
-    for i in range(len(attributes)):
+    for i in range(1,len(attributes)):
 	curr = attributes[i]
-	
+	print "curr: "+str(curr)+" ; cuis_in_gold_only[gold_check_key] "+str(cuis_in_gold_only[gold_check_key])	
 	while(curr > cuis_in_gold_only[gold_check_key]):#check if we need to insert a goldattribute first. While in case we have multiple in a row we need to do
 		for j in range(len(dataLines)):#let's increment every cui that comes after that cui	
 			a,b,c = dataLines[j].split("\t")
