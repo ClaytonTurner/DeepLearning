@@ -44,11 +44,11 @@ valid_matrix = golddata_matrix[(rows_in_gold/3):(2*rows_in_gold/3)]
 valid_labels = gold_labels[(rows_in_gold/3):(2*rows_in_gold/3)]
 test_matrix = golddata_matrix[(2*rows_in_gold/3):rows_in_gold]
 test_labels = gold_labels[(2*rows_in_gold/3):rows_in_gold]
-pretrain_matrix = dt.readSparse(attributesString=attrfile,dataString="sle_data/alldata_gold_cuis_only.txt",instancesString="sle_data/allinstance.txt")
+pretrain_matrix = dt.readSparse(attributesString=attrfile,dataString="sle_data/alldata_gold_cuis_only.txt",instancesString="sle_data/allinstance_corrected.txt")
 
 pickleArray = [[train_matrix,train_labels],
-		[valid_matrix,valid_labels]
-		[test_matrix,test_labels]
+		[valid_matrix,valid_labels],
+		[test_matrix,test_labels],
 		[pretrain_matrix]]
 
 print pickleArray[0][0]
@@ -60,7 +60,7 @@ print pickleArray[2][1]
 print pickleArray[3]
 
 # Pickle and zip to binary data
-f = open("sle.pkl","w")
+f = open("sle.pkl","wb")
 pickle.dump(pickleArray,f)
 f.close()
 f = open("sle.pkl","rb")

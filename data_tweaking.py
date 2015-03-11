@@ -235,7 +235,7 @@ def readSparse (attributesString = "attributes.txt",dataString = "outdata.txt",i
     # Row = Patient
 
     # For shape of array
-    rows = len(instance)-1
+    rows = len(instance)
     cols = len(attributes)
 
     dataArray = []
@@ -265,8 +265,8 @@ def readSparse (attributesString = "attributes.txt",dataString = "outdata.txt",i
     # we need to sort by cuis so we can figure out indptr
     # since it deals with columns 
     # not efficient but it's necessary
-
     indptr = np.asarray(indptrArray)
+    print indptr
     m = sp.csr_matrix((data,indices,indptr), shape=(rows,cols))
     #print m.toarray()
     return m
@@ -321,4 +321,3 @@ def fix_alldata_instances():
     f.write("".join(new_inst))
     f.close()
 
-fix_alldata_instances()

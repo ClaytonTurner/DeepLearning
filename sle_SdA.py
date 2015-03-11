@@ -325,13 +325,10 @@ class SdA(object):
         return train_fn, valid_score, test_score
 
 
-def test_SdA(finetune_lr=0.1, pretraining_epochs=15,
+def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
              pretrain_lr=0.001, training_epochs=1000,
-             dataset='mnist.pkl.gz', batch_size=1):
+             dataset='sle.pkl.gz', batch_size=1):
     """
-    Demonstrates how to train and test a stochastic denoising autoencoder.
-
-    This is demonstrated on MNIST.
 
     :type learning_rate: float
     :param learning_rate: learning rate used in the finetune stage
@@ -356,6 +353,7 @@ def test_SdA(finetune_lr=0.1, pretraining_epochs=15,
     train_set_x, train_set_y = datasets[0]
     valid_set_x, valid_set_y = datasets[1]
     test_set_x, test_set_y = datasets[2]
+    pretrain_set = datasets[3]
 
     # compute number of minibatches for training, validation and testing
     n_train_batches = train_set_x.get_value(borrow=True).shape[0]
@@ -368,20 +366,22 @@ def test_SdA(finetune_lr=0.1, pretraining_epochs=15,
     # construct the stacked denoising autoencoder class
     sda = SdA(
         numpy_rng=numpy_rng,
-        n_ins=28 * 28,
+        #n_ins=28 * 28,
+	n_ins=train_set_x.shape[0] * train_set_x.shape[1],
         hidden_layers_sizes=[1000, 1000, 1000],
-        n_outs=10
+        n_outs=2
     )
     # end-snippet-3 start-snippet-4
     #########################
     # PRETRAINING THE MODEL #
     #########################
     print '... getting the pretraining functions'
-    pretraining_fns = sda.pretraining_functions(train_set_x=train_set_x,
-                                                batch_size=batch_size)
+    #pretraining_fns = sda.pretraining_functions(train_set_x=train_set_x,
+    #                                            batch_size=batch_size)
+    pretraining_fns = sda.pretraining_functions(train_set_x=pretrain_set,batch_size=Batch_size)
+
 
     print '... pre-training the model'
-    start_time = time.clock()
     ## Pre-train layer-wise
     corruption_levels = [.1, .2, .3]
     for i in xrange(sda.n_layers):
@@ -396,11 +396,7 @@ def test_SdA(finetune_lr=0.1, pretraining_epochs=15,
             print 'Pre-training layer %i, epoch %d, cost ' % (i, epoch),
             print numpy.mean(c)
 
-    end_time = time.clock()
 
-    print >> sys.stderr, ('The pretraining code for file ' +
-                          os.path.split(__file__)[1] +
-                          ' ran for %.2fm' % ((end_time - start_time) / 60.))
     # end-snippet-4
     ########################
     # FINETUNING THE MODEL #
@@ -409,12 +405,13 @@ def test_SdA(finetune_lr=0.1, pretraining_epochs=15,
     # get the training, validation and testing function for the model
     print '... getting the finetuning functions'
     train_fn, validate_model, test_model = sda.build_finetune_functions(
-        datasets=datasets,
+        #datasets=datasets,
+	datasets=datasets[0:3],
         batch_size=batch_size,
         learning_rate=finetune_lr
     )
 
-    print '... finetunning the model'
+    print '... finetuning the model'
     # early-stopping parameters
     patience = 10 * n_train_batches  # look as this many examples regardless
     patience_increase = 2.  # wait this much longer when a new best is
@@ -488,4 +485,4 @@ def test_SdA(finetune_lr=0.1, pretraining_epochs=15,
 
 
 if __name__ == '__main__':
-    test_SdA()
+    run_SdA(pretraining_epochs=10,training_epochs=10)
