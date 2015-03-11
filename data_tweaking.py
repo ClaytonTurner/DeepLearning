@@ -205,13 +205,10 @@ def gold_cuis_only_merge():
     
 
 
-def readSparse():
+def readSparse(attributesString = "attributes.txt",dataString = "outdata.txt"):
     # Ref: http://www.deeplearning.net/software/theano/library/sparse/index.html#libdoc-sparse
     
-     # Names of input files output by cTAKES
-    attributesString = "attributes.txt"
-    instancesString = "instance.txt"
-    dataString = "outdata.txt" # this should be the output of sortSparseData
+     # Names of input files output by cTAKES are function parameters
     
     # Start at repo name: here it's DeepLearning
     # Change directory to DeepLearning/datasets/example_notes
@@ -222,9 +219,9 @@ def readSparse():
     attrFile = open(attributesString,"r")
     attributes = attrFile.readlines()
     attrFile.close()
-    instanceFile = open(instancesString,"r")
-    instance = instanceFile.readlines()
-    instanceFile.close()
+    #instanceFile = open(instancesString,"r")
+    #instance = instanceFile.readlines()
+    #instanceFile.close()
     dataFile = open(dataString,"r")
     dataLines = dataFile.readlines()
     dataFile.close()

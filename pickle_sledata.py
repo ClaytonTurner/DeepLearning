@@ -19,6 +19,13 @@ We need to redefine these variables since what we want to pre-train on
 	doesn't actually have labels
 '''
 
+unlabeled_data_file = open("sle_data/alldata_gold_cuis_only.txt","r")
+unlabeled_data_lines = unlabeled_data_file.readlines()
+unlabeled_data_file.close()
+labeled_data_file = open("sle_data/sorted_golddata.txt","r")
+labeled_data_lines = labeled_data_file.readlines()
+labeled_data_file.close()
+
 
 # Pickle and zip to binary data
 f = open("sle.pkl","w")
