@@ -266,7 +266,6 @@ def readSparse (attributesString = "attributes.txt",dataString = "outdata.txt",i
     # since it deals with columns 
     # not efficient but it's necessary
     indptr = np.asarray(indptrArray)
-    print indptr
     m = sp.csr_matrix((data,indices,indptr), shape=(rows,cols))
     #print m.toarray()
     return m

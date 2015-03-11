@@ -50,7 +50,7 @@ pickleArray = [[train_matrix,train_labels],
 		[valid_matrix,valid_labels],
 		[test_matrix,test_labels],
 		[pretrain_matrix]]
-
+'''
 print pickleArray[0][0]
 print pickleArray[0][1]
 print pickleArray[1][0]
@@ -58,12 +58,13 @@ print pickleArray[1][1]
 print pickleArray[2][0]
 print pickleArray[2][1]
 print pickleArray[3]
-
+'''
 # Pickle and zip to binary data
 f = open("sle.pkl","wb")
 pickle.dump(pickleArray,f)
 f.close()
 f = open("sle.pkl","rb")
+frl = f.readlines()
 f_out = gzip.open("sle.pkl.gz","wb")
 f_out.writelines(f)
 f.close()
