@@ -2,3 +2,4 @@
 sle_data/
 *.nohup.*
 *.swp
+sle.pkl*
