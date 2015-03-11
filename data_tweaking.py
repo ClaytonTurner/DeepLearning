@@ -205,23 +205,23 @@ def gold_cuis_only_merge():
     
 
 
-def readSparse(attributesString = "attributes.txt",dataString = "outdata.txt"):
+def readSparse (attributesString = "attributes.txt",dataString = "outdata.txt",instancesString="instances.txt"):
     # Ref: http://www.deeplearning.net/software/theano/library/sparse/index.html#libdoc-sparse
     
      # Names of input files output by cTAKES are function parameters
     
     # Start at repo name: here it's DeepLearning
     # Change directory to DeepLearning/datasets/example_notes
-    os.chdir(os.path.join("datasets","example_notes"))# for example data
-    #os.chdir(os.path.join("sle_data")) # for sle data
+    # os.chdir(os.path.join("datasets","example_notes"))# for example data
+#    os.chdir(os.path.join("sle_data")) # for sle data
     
     # Read in data files
     attrFile = open(attributesString,"r")
     attributes = attrFile.readlines()
     attrFile.close()
-    #instanceFile = open(instancesString,"r")
-    #instance = instanceFile.readlines()
-    #instanceFile.close()
+    instanceFile = open(instancesString,"r")
+    instance = instanceFile.readlines()
+    instanceFile.close()
     dataFile = open(dataString,"r")
     dataLines = dataFile.readlines()
     dataFile.close()
@@ -267,21 +267,42 @@ def readSparse(attributesString = "attributes.txt",dataString = "outdata.txt"):
     # not efficient but it's necessary
 
     indptr = np.asarray(indptrArray)
-    print "data: "
+    '''print "data: "
     print data
     print "indices: "
     print indices
     print "indptr: "
     print indptr
-
+    '''
     
     
     
     m = sp.csr_matrix((data,indices,indptr), shape=(rows,cols))
-    print m.toarray()
-   
-#sortSparseData("alldata.txt")
-#sortSparseData("golddata.txt") 
-#merge_all_and_gold()
-#readSparse()
-gold_cuis_only_merge()
+    #print m.toarray()
+    return m
+  
+def get_labels_according_to_data_order (dataString = "outdata.txt",instancesString="instances.txt"):
+   '''
+	This file assumes the data has already been sorted	
+   ''' 
+    # Read in data files
+    instanceFile = open(instancesString,"r")
+    instance = instanceFile.readlines()
+    instanceFile.close()
+    dataFile = open(dataString,"r")
+    dataLines = dataFile.readlines()
+    dataFile.close()
+    
+    patients = len(instance)-1
+    labels = []
+    patients_seen = []
+    for line in dataLines:
+	subjectid = line.split("\t")[0]
+	if subjectid not in patients_seen:
+		patients_seen.append(subjectid)
+		for rec in instance:
+			if subjectid == rec.split("\t")[0]
+				labels.append(rec.split("\t")[1].strip())
+				break
+    return np.asarray(labels)
+			
