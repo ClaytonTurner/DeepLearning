@@ -213,7 +213,7 @@ def readSparse (attributesString = "attributes.txt",dataString = "outdata.txt",i
     # Start at repo name: here it's DeepLearning
     # Change directory to DeepLearning/datasets/example_notes
     # os.chdir(os.path.join("datasets","example_notes"))# for example data
-#    os.chdir(os.path.join("sle_data")) # for sle data
+#     os.chdir(os.path.join("sle_data"))# for sle data
     
     # Read in data files
     attrFile = open(attributesString,"r")
@@ -267,24 +267,14 @@ def readSparse (attributesString = "attributes.txt",dataString = "outdata.txt",i
     # not efficient but it's necessary
 
     indptr = np.asarray(indptrArray)
-    '''print "data: "
-    print data
-    print "indices: "
-    print indices
-    print "indptr: "
-    print indptr
-    '''
-    
-    
-    
     m = sp.csr_matrix((data,indices,indptr), shape=(rows,cols))
     #print m.toarray()
     return m
   
 def get_labels_according_to_data_order (dataString = "outdata.txt",instancesString="instances.txt"):
-   '''
+    '''
 	This file assumes the data has already been sorted	
-   ''' 
+    ''' 
     # Read in data files
     instanceFile = open(instancesString,"r")
     instance = instanceFile.readlines()
@@ -301,8 +291,34 @@ def get_labels_according_to_data_order (dataString = "outdata.txt",instancesStri
 	if subjectid not in patients_seen:
 		patients_seen.append(subjectid)
 		for rec in instance:
-			if subjectid == rec.split("\t")[0]
+			if subjectid == rec.split("\t")[0]:
 				labels.append(rec.split("\t")[1].strip())
 				break
     return np.asarray(labels)
-			
+
+def fix_alldata_instances():
+    # this has to be done since ctakes crashed early
+    # all of the id's were grabbed, but not all of the patients
+    os.chdir(os.path.join("sle_data"))
+    f = open("alldata_gold_cuis_only.txt","r")
+    datalines = f.readlines()
+    f.close()
+    f = open("allinstance.txt","r")
+    instlines = f.readlines()
+    f.close()
+    
+    unique = []
+    for line in datalines:
+	if line.split("\t")[0] not in unique:
+		unique.append(line.split("\t")[0])
+
+    new_inst = []
+    for line in instlines:
+	if line.split("\t")[0] in unique:			
+		new_inst.append(line)
+
+    f = open("allinstance_corrected.txt","w")
+    f.write("".join(new_inst))
+    f.close()
+
+fix_alldata_instances()

@@ -34,7 +34,10 @@ goldInstancesString = "sle_data/goldinstance.txt"
 golddata_matrix = dt.readSparse(attributesString=attrfile,dataString=goldDataString,instancesString=goldInstancesString)
 gold_labels = dt.get_labels_according_to_data_order(dataString=goldDataString,instancesString=goldInstancesString)
 
-rows_in_gold = len(golddata_matrix) ## == len(gold_labels)
+#print len(gold_labels)
+#print golddata_matrix.shape[0]
+
+rows_in_gold = golddata_matrix.shape[0] ## == len(gold_labels)
 train_matrix = golddata_matrix[0:(rows_in_gold/3)]
 train_labels = gold_labels[0:(rows_in_gold/3)]
 valid_matrix = golddata_matrix[(rows_in_gold/3):(2*rows_in_gold/3)]
