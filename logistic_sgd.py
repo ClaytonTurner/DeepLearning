@@ -177,7 +177,7 @@ def load_data(dataset):
     #############
     # LOAD DATA #
     #############
-
+    '''
     # Download the MNIST dataset if it is not present
     data_dir, data_file = os.path.split(dataset)
     if data_dir == "" and not os.path.isfile(dataset):
@@ -198,15 +198,14 @@ def load_data(dataset):
         )
         print 'Downloading data from %s' % origin
         urllib.urlretrieve(origin, dataset)
-
+    '''
     print '... loading data'
 
     # Load the dataset
+    #dataset = 'datasets/mnist.pkl.gz'
     f = gzip.open(dataset, 'rb')
-    try:
-    	train_set, valid_set, test_set = cPickle.load(f)
-    except:
-	train_set, valid_set, test_set, pretrain_set = cPickle.load(f) # pretrain not used here
+    train_set, valid_set, test_set, pretrain_set = cPickle.load(f)
+    #train_set, valid_set, test_set = cPickle.load(f)
     f.close()
     #train_set, valid_set, test_set format: tuple(input, target)
     #input is an numpy.ndarray of 2 dimensions (a matrix)
@@ -225,6 +224,8 @@ def load_data(dataset):
         variable) would lead to a large decrease in performance.
         """
         data_x, data_y = data_xy
+	data_x = data_x.todense()
+	#print type(data_x)# == numpy.ndarray
         shared_x = theano.shared(numpy.asarray(data_x,
                                                dtype=theano.config.floatX),
                                  borrow=borrow)
@@ -244,8 +245,12 @@ def load_data(dataset):
     valid_set_x, valid_set_y = shared_dataset(valid_set)
     train_set_x, train_set_y = shared_dataset(train_set)
 
+    pretrain_x = pretrain_set[0].todense()
+    pretrain_set_x = theano.shared(numpy.asarray(pretrain_x,
+						dtype=theano.config.floatX),
+					borrow=True)
     rval = [(train_set_x, train_set_y), (valid_set_x, valid_set_y),
-            (test_set_x, test_set_y)]
+            (test_set_x, test_set_y),(pretrain_set_x)]
     return rval
 
 

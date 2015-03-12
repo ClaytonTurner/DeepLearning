@@ -123,7 +123,8 @@ class SdA(object):
 
             # the size of the input is either the number of hidden units of
             # the layer below or the input size if we are on the first layer
-            if i == 0:
+            print n_ins
+	    if i == 0:
                 input_size = n_ins
             else:
                 input_size = hidden_layers_sizes[i - 1]
@@ -135,7 +136,6 @@ class SdA(object):
                 layer_input = self.x
             else:
                 layer_input = self.sigmoid_layers[-1].output
-
             sigmoid_layer = HiddenLayer(rng=numpy_rng,
                                         input=layer_input,
                                         n_in=input_size,
@@ -197,8 +197,7 @@ class SdA(object):
         :param learning_rate: learning rate used during training for any of
                               the dA layers
         '''
-
-        # index to a [mini]batch
+	# index to a [mini]batch
         index = T.lscalar('index')  # index to a minibatch
         corruption_level = T.scalar('corruption')  # % of corruption to use
         learning_rate = T.scalar('lr')  # learning rate to use
@@ -206,8 +205,7 @@ class SdA(object):
         batch_begin = index * batch_size
         # ending of a batch given `index`
         batch_end = batch_begin + batch_size
-
-        pretrain_fns = []
+	pretrain_fns = []
         for dA in self.dA_layers:
             # get the cost and the updates list
             cost, updates = dA.get_cost_updates(corruption_level,
@@ -353,7 +351,7 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
     train_set_x, train_set_y = datasets[0]
     valid_set_x, valid_set_y = datasets[1]
     test_set_x, test_set_y = datasets[2]
-    pretrain_set = datasets[3]
+    pretrain_set_x = datasets[3]
 
     # compute number of minibatches for training, validation and testing
     n_train_batches = train_set_x.get_value(borrow=True).shape[0]
@@ -367,7 +365,8 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
     sda = SdA(
         numpy_rng=numpy_rng,
         #n_ins=28 * 28,
-	n_ins=train_set_x.shape[0] * train_set_x.shape[1],
+	#n_ins=train_set_x.shape[0] * train_set_x.shape[1],
+	n_ins=train_set_x.get_value(borrow=True).shape[0],
         hidden_layers_sizes=[1000, 1000, 1000],
         n_outs=2
     )
@@ -378,8 +377,9 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
     print '... getting the pretraining functions'
     #pretraining_fns = sda.pretraining_functions(train_set_x=train_set_x,
     #                                            batch_size=batch_size)
-    pretraining_fns = sda.pretraining_functions(train_set_x=pretrain_set,batch_size=Batch_size)
-
+    pretraining_fns = sda.pretraining_functions(train_set_x=pretrain_set_x,
+						batch_size=batch_size)
+    
 
     print '... pre-training the model'
     ## Pre-train layer-wise
