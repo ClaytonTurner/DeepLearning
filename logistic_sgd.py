@@ -225,6 +225,10 @@ def load_data(dataset):
         """
         data_x, data_y = data_xy
 	data_x = data_x.todense()
+	print len(data_x)
+	print len(data_x[0])
+	print len(data_y)
+	print len(data_y[0])
 	#print type(data_x)# == numpy.ndarray
         shared_x = theano.shared(numpy.asarray(data_x,
                                                dtype=theano.config.floatX),
