@@ -46,7 +46,7 @@ from multilayer_perceptron import HiddenLayer
 from denoisingAutoencoder import dA
 
 #theano.config.optimizer='None'
-theano.config.exception_verbosity='high'
+#theano.config.exception_verbosity='high'
 
 # start-snippet-1
 class SdA(object):
@@ -334,7 +334,7 @@ class SdA(object):
 
 def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
              pretrain_lr=0.001, training_epochs=1000,
-             dataset='sle.pkl.gz', batch_size=100):
+             dataset='sle.pkl.gz', batch_size=1):
     """
 
     :type learning_rate: float
@@ -377,8 +377,8 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
         #n_ins=28 * 28,
 	#n_ins=train_set_x.shape[0] * train_set_x.shape[1],
 	n_ins=train_set_x.get_value(borrow=True).shape[1],
-        #hidden_layers_sizes=[1000, 1000, 1000],
-        hidden_layers_sizes=[100],
+        hidden_layers_sizes=[1000, 1000, 1000],
+        #hidden_layers_sizes=[100],
         n_outs=2
     )
     # end-snippet-3 start-snippet-4
@@ -499,4 +499,4 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
 
 
 if __name__ == '__main__':
-    run_SdA(pretraining_epochs=2,training_epochs=2)
+    run_SdA(pretraining_epochs=10,training_epochs=10)

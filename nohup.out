@@ -1,0 +1,27 @@
+... loading data
+... building the model
+... getting the pretraining functions
+... pre-training the model
+Pre-training layer 0, epoch 0, cost  -283.56822867
+Pre-training layer 0, epoch 1, cost  -1302.56901256
+Pre-training layer 1, epoch 0, cost  -183750.178289
+Pre-training layer 1, epoch 1, cost  -573264.252573
+Pre-training layer 2, epoch 0, cost  -147397.439307
+Pre-training layer 2, epoch 1, cost  -462139.696336
+... getting the finetuning functions
+... finetuning the model
+Traceback (most recent call last):
+  File "sle_SdA.py", line 494, in <module>
+    run_SdA(pretraining_epochs=2,training_epochs=2)
+  File "sle_SdA.py", line 443, in run_SdA
+    minibatch_avg_cost = train_fn(minibatch_index)
+  File "/usr/local/lib/python2.7/dist-packages/theano/compile/function_module.py", line 588, in __call__
+    self.fn.thunks[self.fn.position_of_error])
+  File "/usr/local/lib/python2.7/dist-packages/theano/compile/function_module.py", line 579, in __call__
+    outputs = self.fn()
+ValueError: y_i value out of bounds
+Apply node that caused the error: CrossentropySoftmaxArgmax1HotWithBias(Dot22.0, b, Elemwise{Cast{int32}}.0)
+Inputs shapes: [(2, 2), (2,), (2,)]
+Inputs strides: [(16, 8), (8,), (4,)]
+Inputs types: [TensorType(float64, matrix), TensorType(float64, vector), TensorType(int32, vector)]
+Use the Theano flag 'exception_verbosity=high' for a debugprint of this apply node.

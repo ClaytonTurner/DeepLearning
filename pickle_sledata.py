@@ -4,6 +4,7 @@ import numpy as np
 import data_tweaking as dt
 from sklearn.decomposition import RandomizedPCA
 from sklearn.preprocessing import normalize
+import sys
 '''
 pickleArray[0] = train_set
 	pickleArray[0][0] = x 
@@ -22,13 +23,7 @@ We need to redefine these variables since what we want to pre-train on
 	doesn't actually have labels
 '''
 
-#unlabeled_data_file = open("sle_data/alldata_gold_cuis_only.txt","r")
-#unlabeled_data_lines = unlabeled_data_file.readlines()
-#unlabeled_data_file.close()
-#labeled_data_file = open("sle_data/sorted_golddata.txt","r")
-#labeled_data_lines = labeled_data_file.readlines()
-#labeled_data_file.close()
-
+n_components = sys.argv[1]
 attrfile = "sle_data/goldattributes.txt"
 goldDataString = "sle_data/sorted_golddata.txt"
 goldInstancesString = "sle_data/goldinstance.txt"
@@ -43,7 +38,7 @@ for i in range(len(gold_labels)):
 
 golddata_matrix = golddata_matrix.todense()
 
-pca = RandomizedPCA(n_components=3)
+pca = RandomizedPCA(n_components)
 pca.fit(golddata_matrix)
 golddata_matrix = pca.transform(golddata_matrix)
 
