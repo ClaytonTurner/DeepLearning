@@ -2,7 +2,8 @@ import cPickle as pickle
 import gzip
 import numpy as np
 import data_tweaking as dt
-
+from sklearn.decomposition import RandomizedPCA
+from sklearn.preprocessing import normalize
 '''
 pickleArray[0] = train_set
 	pickleArray[0][0] = x 
@@ -34,8 +35,18 @@ goldInstancesString = "sle_data/goldinstance.txt"
 golddata_matrix = dt.readSparse(attributesString=attrfile,dataString=goldDataString,instancesString=goldInstancesString)
 gold_labels = dt.get_labels_according_to_data_order(dataString=goldDataString,instancesString=goldInstancesString)
 
-#print len(gold_labels)
-#print golddata_matrix.shape[0]
+golddata_matrix = golddata_matrix.todense()
+
+pca = RandomizedPCA(n_components=3)
+pca.fit(golddata_matrix)
+golddata_matrix = pca.transform(golddata_matrix)
+
+def normalize(m):
+	m = m.T
+	m = (m - m.min())/np.ptp(m)
+	return m.T
+#golddata_matrix = normalize(golddata_matrix, axis=0).ravel()
+golddata_matrix = normalize(golddata_matrix)
 
 rows_in_gold = golddata_matrix.shape[0] ## == len(gold_labels)
 train_matrix = golddata_matrix[0:(rows_in_gold/3)]
@@ -46,6 +57,10 @@ test_matrix = golddata_matrix[(2*rows_in_gold/3):rows_in_gold]
 test_labels = gold_labels[(2*rows_in_gold/3):rows_in_gold]
 pretrain_matrix = dt.readSparse(attributesString=attrfile,dataString="sle_data/alldata_gold_cuis_only.txt",instancesString="sle_data/allinstance_corrected.txt")
 
+pretrain_matrix = pretrain_matrix.todense()
+pretrain_matrix = pca.transform(pretrain_matrix)
+pretrain_matrix = normalize(pretrain_matrix)
+
 pickleArray = [[train_matrix,train_labels],
 		[valid_matrix,valid_labels],
 		[test_matrix,test_labels],
@@ -54,7 +69,11 @@ f = gzip.open("sle.pkl.gz","wb")
 pickle.dump(pickleArray,f)
 f.close()
 
+'''
 f = gzip.open("sle.pkl.gz","rb")
 a,b,c,d = pickle.load(f)
+out = open("data.out","w")
+out.write(d)
+out.close()
 f.close()
-
+'''

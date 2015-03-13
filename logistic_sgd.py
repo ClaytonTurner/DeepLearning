@@ -224,11 +224,7 @@ def load_data(dataset):
         variable) would lead to a large decrease in performance.
         """
         data_x, data_y = data_xy
-	data_x = data_x.todense()
-	print len(data_x)
-	print len(data_x[0])
-	print len(data_y)
-	print len(data_y[0])
+	#data_x = data_x.todense()
 	#print type(data_x)# == numpy.ndarray
         shared_x = theano.shared(numpy.asarray(data_x,
                                                dtype=theano.config.floatX),
@@ -249,7 +245,14 @@ def load_data(dataset):
     valid_set_x, valid_set_y = shared_dataset(valid_set)
     train_set_x, train_set_y = shared_dataset(train_set)
 
-    pretrain_x = pretrain_set[0].todense()
+    pretrain_x = pretrain_set[0]#.todense()
+    #from sklearn.decomposition import RandomizedPCA
+    #pca = RandomizedPCA(n_components=10)
+    #pca.fit(pretrain_x)
+    #pretrain_x = pca.transform(pretrain_x)
+    #print pretrain_x == 0
+    #pretrain_x[pretrain_x == 0] = 0.00001
+    #print pretrain_x == 0
     pretrain_set_x = theano.shared(numpy.asarray(pretrain_x,
 						dtype=theano.config.floatX),
 					borrow=True)

@@ -229,25 +229,37 @@ class dA(object):
         hidden layer
 
         """
-        return T.nnet.sigmoid(T.dot(hidden, self.W_prime) + self.b_prime)
+	W_printed = theano.printing.Print('self.W_prime: ')(self.W_prime)
+	b_printed = theano.printing.Print('self.b_prime: ')(self.b_prime)
+        return T.nnet.sigmoid(T.dot(hidden, W_printed) + b_printed)
 
     def get_cost_updates(self, corruption_level, learning_rate):
         """ This function computes the cost and the updates for one trainng
         step of the dA """
+	
+	x_printed = theano.printing.Print('self.x: ')(self.x)
+	x_summed = T.sum(T.sum(self.x))
+	x_summed_printed = theano.printing.Print('x_summed: ')(x_summed)
 
-        tilde_x = self.get_corrupted_input(self.x, corruption_level)
-        y = self.get_hidden_values(tilde_x)
-        z = self.get_reconstructed_input(y)
+        tilde_x = self.get_corrupted_input(x_printed, corruption_level)
+	tilde_x_printed = theano.printing.Print('tilde_x: ')(tilde_x)
+        y = self.get_hidden_values(tilde_x_printed)
+	y_printed = theano.printing.Print('y: ')(y)
+        z = self.get_reconstructed_input(y_printed)
+	z_printed = theano.printing.Print('z: ')(z)
         # note : we sum over the size of a datapoint; if we are using
         #        minibatches, L will be a vector, with one entry per
         #        example in minibatch
-        L = - T.sum(self.x * T.log(z) + (1 - self.x) * T.log(1 - z), axis=1)
+	part = T.dot(y,self.W_prime)
+	part_printed = theano.printing.Print('part: ')(part)
+        L = - T.sum(self.x * T.log(z_printed) + (1 - self.x) * T.log(1 - z_printed)+ part_printed - part_printed , axis=1)
+	L_printed = theano.printing.Print('L_printed: ')(L)
         # note : L is now a vector, where each element is the
         #        cross-entropy cost of the reconstruction of the
         #        corresponding example of the minibatch. We need to
         #        compute the average of all these to get the cost of
         #        the minibatch
-        cost = T.mean(L)
+        cost = T.mean(L_printed)
 
         # compute the gradients of the cost of the `dA` with respect
         # to its parameters

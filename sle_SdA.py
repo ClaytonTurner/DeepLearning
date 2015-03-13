@@ -45,6 +45,8 @@ from logistic_sgd import LogisticRegression, load_data
 from multilayer_perceptron import HiddenLayer
 from denoisingAutoencoder import dA
 
+theano.config.optimizer='None'
+theano.config.exception_verbosity='high'
 
 # start-snippet-1
 class SdA(object):
@@ -123,7 +125,6 @@ class SdA(object):
 
             # the size of the input is either the number of hidden units of
             # the layer below or the input size if we are on the first layer
-            print n_ins
 	    if i == 0:
                 input_size = n_ins
             else:
@@ -221,7 +222,7 @@ class SdA(object):
                 updates=updates,
                 givens={
                     self.x: train_set_x[batch_begin: batch_end]
-                }
+                }#,mode='DebugMode'
             )
             # append `fn` to the list of functions
             pretrain_fns.append(fn)
@@ -325,7 +326,7 @@ class SdA(object):
 
 def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
              pretrain_lr=0.001, training_epochs=1000,
-             dataset='sle.pkl.gz', batch_size=1):
+             dataset='sle.pkl.gz', batch_size=2):
     """
 
     :type learning_rate: float
@@ -352,10 +353,12 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
     valid_set_x, valid_set_y = datasets[1]
     test_set_x, test_set_y = datasets[2]
     pretrain_set_x = datasets[3]
-
+    #print len(train_set_y.eval())
     # compute number of minibatches for training, validation and testing
     n_train_batches = train_set_x.get_value(borrow=True).shape[0]
     n_train_batches /= batch_size
+    n_pretrain_batches = pretrain_set_x.get_value(borrow=True).shape[0]
+    n_pretrain_batches /= batch_size
 
     # numpy random generator
     # start-snippet-3
@@ -366,7 +369,7 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
         numpy_rng=numpy_rng,
         #n_ins=28 * 28,
 	#n_ins=train_set_x.shape[0] * train_set_x.shape[1],
-	n_ins=train_set_x.get_value(borrow=True).shape[0],
+	n_ins=train_set_x.get_value(borrow=True).shape[1],
         hidden_layers_sizes=[1000, 1000, 1000],
         n_outs=2
     )
@@ -389,10 +392,14 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
         for epoch in xrange(pretraining_epochs):
             # go through the training set
             c = []
-            for batch_index in xrange(n_train_batches):
+            #for batch_index in xrange(n_train_batches):#xrange(131)
+	    for batch_index in xrange(n_pretrain_batches):
+		print i,batch_index
                 c.append(pretraining_fns[i](index=batch_index,
                          corruption=corruption_levels[i],
                          lr=pretrain_lr))
+		#if batch_index == 2:
+		#	lkadjf = lkjdf
             print 'Pre-training layer %i, epoch %d, cost ' % (i, epoch),
             print numpy.mean(c)
 
