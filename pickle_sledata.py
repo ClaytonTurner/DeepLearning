@@ -35,11 +35,27 @@ goldInstancesString = "sle_data/goldinstance.txt"
 golddata_matrix = dt.readSparse(attributesString=attrfile,dataString=goldDataString,instancesString=goldInstancesString)
 gold_labels = dt.get_labels_according_to_data_order(dataString=goldDataString,instancesString=goldInstancesString)
 
+for i in range(len(gold_labels)):
+	if gold_labels[i] == "100":
+		gold_labels[i] = "1"
+	elif gold_labels[i] == "-100":
+		gold_labels[i] = "0"
+
 golddata_matrix = golddata_matrix.todense()
 
 pca = RandomizedPCA(n_components=3)
 pca.fit(golddata_matrix)
 golddata_matrix = pca.transform(golddata_matrix)
+
+variance_explained = []
+for i in range(len(pca.explained_variance_ratio_)):
+	if i == 0:
+		variance_explained.append(pca.explained_variance_ratio_[i])
+	else:
+		variance_explained.append(pca.explained_variance_ratio_[i]+variance_explained[i-1])
+
+print "pca explained variance: "
+print variance_explained
 
 def normalize(m):
 	m = m.T

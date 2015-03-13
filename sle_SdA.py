@@ -46,7 +46,7 @@ from multilayer_perceptron import HiddenLayer
 from denoisingAutoencoder import dA
 
 #theano.config.optimizer='None'
-#theano.config.exception_verbosity='high'
+theano.config.exception_verbosity='high'
 
 # start-snippet-1
 class SdA(object):
@@ -174,6 +174,8 @@ class SdA(object):
 
         # compute the cost for second phase of training,
         # defined as the negative log likelihood
+
+	#y_printed = theano.printing.Print('self.y: ')(self.y)
         self.finetune_cost = self.logLayer.negative_log_likelihood(self.y)
         # compute the gradients with respect to the model parameters
         # symbolic variable that points to the number of errors made on the
@@ -259,6 +261,9 @@ class SdA(object):
         n_test_batches = test_set_x.get_value(borrow=True).shape[0]
         n_test_batches /= batch_size
 
+	print n_test_batches
+	print n_valid_batches
+
         index = T.lscalar('index')  # index to a [mini]batch
 
         # compute the gradients with respect to the model parameters
@@ -319,14 +324,17 @@ class SdA(object):
 
         # Create a function that scans the entire test set
         def test_score():
-            return [test_score_i(i) for i in xrange(n_test_batches)]
+	    if n_test_batches == n_valid_batches:
+            	return [test_score_i(i) for i in xrange(n_test_batches)]
+	    else:
+		return [test_score_i(i) for i in xrange(n_test_batches-1)]
 
         return train_fn, valid_score, test_score
 
 
 def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
              pretrain_lr=0.001, training_epochs=1000,
-             dataset='sle.pkl.gz', batch_size=2):
+             dataset='sle.pkl.gz', batch_size=100):
     """
 
     :type learning_rate: float
@@ -359,7 +367,6 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
     n_train_batches /= batch_size
     n_pretrain_batches = pretrain_set_x.get_value(borrow=True).shape[0]
     n_pretrain_batches /= batch_size
-
     # numpy random generator
     # start-snippet-3
     numpy_rng = numpy.random.RandomState(89677)
@@ -370,7 +377,8 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
         #n_ins=28 * 28,
 	#n_ins=train_set_x.shape[0] * train_set_x.shape[1],
 	n_ins=train_set_x.get_value(borrow=True).shape[1],
-        hidden_layers_sizes=[1000, 1000, 1000],
+        #hidden_layers_sizes=[1000, 1000, 1000],
+        hidden_layers_sizes=[100],
         n_outs=2
     )
     # end-snippet-3 start-snippet-4
@@ -491,4 +499,4 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
 
 
 if __name__ == '__main__':
-    run_SdA(pretraining_epochs=10,training_epochs=10)
+    run_SdA(pretraining_epochs=2,training_epochs=2)
