@@ -499,4 +499,6 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
 
 
 if __name__ == '__main__':
-    run_SdA(pretraining_epochs=10,training_epochs=10)
+    import sys
+    batch = sys.argv[1]
+    run_SdA(pretraining_epochs=15,training_epochs=1000,batch_size=int(batch))
