@@ -1,5 +1,5 @@
 *.pyc
 sle_data/
-*.nohup.*
+*nohup.*
 *.swp
 sle.pkl*
