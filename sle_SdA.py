@@ -45,8 +45,8 @@ from logistic_sgd import LogisticRegression, load_data
 from multilayer_perceptron import HiddenLayer
 from denoisingAutoencoder import dA
 
-theano.config.optimizer='None'
-theano.config.exception_verbosity='high'
+#theano.config.optimizer='None'
+#theano.config.exception_verbosity='high'
 
 # start-snippet-1
 class SdA(object):
@@ -394,7 +394,6 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
             c = []
             #for batch_index in xrange(n_train_batches):#xrange(131)
 	    for batch_index in xrange(n_pretrain_batches):
-		print i,batch_index
                 c.append(pretraining_fns[i](index=batch_index,
                          corruption=corruption_levels[i],
                          lr=pretrain_lr))
