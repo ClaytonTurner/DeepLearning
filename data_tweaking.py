@@ -204,7 +204,7 @@ def gold_cuis_only_merge():
     alldata_out.close()
     
 
-
+ 
 def readSparse (attributesString = "attributes.txt",dataString = "outdata.txt",instancesString="instances.txt"):
     # Ref: http://www.deeplearning.net/software/theano/library/sparse/index.html#libdoc-sparse
     
@@ -236,6 +236,8 @@ def readSparse (attributesString = "attributes.txt",dataString = "outdata.txt",i
 
     # For shape of array
     rows = len(instance)
+    if dataString == 'sle_data/sorted_golddata.txt':
+	rows -= 1 # -1 because we have a subjectid that has no label and we have to get rid of them
     cols = len(attributes)
 
     dataArray = []
@@ -247,7 +249,7 @@ def readSparse (attributesString = "attributes.txt",dataString = "outdata.txt",i
     for line in dataLines:
         subjectid,cui,cuicount = line.split("\t")
         cuicount = cuicount.strip()
-        if subjectid not in subjectidArray:
+        if subjectid not in subjectidArray and (not subjectid =='9011286'): # this is because we have data but no label for this patient
             # so we have finished a patient
             subjectidArray.append(subjectid)
             subjectctr += 1
@@ -256,6 +258,7 @@ def readSparse (attributesString = "attributes.txt",dataString = "outdata.txt",i
         #indicesArray.append(subjectctr)
         indicesArray.append(int(cui)-1)
         indptrctr += 1
+    #print "subject id array: " + str(len(subjectidArray))
     indptrArray.append(indptrctr)
 
         
@@ -269,7 +272,86 @@ def readSparse (attributesString = "attributes.txt",dataString = "outdata.txt",i
     m = sp.csr_matrix((data,indices,indptr), shape=(rows,cols))
     #print m.toarray()
     return m
-  
+
+
+def readSparseFewCuis(mat):
+    '''
+    attributesString = "sle_data/goldattributes.txt",
+    instancesString = "sle_data/goldinstance.txt",
+    dataString = "sle_data/sorted_golddata.txt"):
+    '''
+    '''
+    Using CUIs that we KNOW have high classification power
+    '''   
+ 
+    # Read in data files
+    '''
+    attrFile = open(attributesString,"r")
+    attributes = attrFile.readlines()
+    attrFile.close()
+    instanceFile = open(instancesString,"r")
+    instance = instanceFile.readlines()
+    instanceFile.close()
+    dataFile = open(dataString,"r")
+    dataLines = dataFile.readlines()
+    dataFile.close()
+    '''
+    attrFile = open("sle_data/goldattributes.txt","r")
+    mat = mat.todense()
+    attributes = attrFile.readlines()
+    attrFile.close()
+    cui_ref = []
+    best_cuis = ["C0409974","C0036429","C0701055","C0035448","C0205400","C0034787","C0024003","C1269548","C0010729","C1948540"]
+    #axis=0 == column
+    rows = mat.shape[0]
+    cols = 0#len(best_cuis)
+    new_matrix = np.empty((rows,cols))
+    #print len(attributes)
+    for i in range(len(attributes)):
+	if attributes[i].strip() in best_cuis:
+		new_matrix = np.concatenate((new_matrix,mat[:,i]),axis=1)
+    #print new_matrix
+    return new_matrix
+    '''
+    # For shape of array
+    #rows = len(instance)
+    #cols = len(best_cuis)
+    col_set = set()
+
+    dataArray = []
+    indicesArray = [] 
+    subjectidArray = []
+    subjectctr = -1
+    indptrctr = 0
+    indptrArray = []
+    for line in dataLines:
+        subjectid,cui,cuicount = line.split("\t")
+	if cui_ref[int(cui)] in best_cuis:
+		col_set.add(cui_ref[int(cui)])
+		cuicount = cuicount.strip()
+		if subjectid not in subjectidArray:
+		    # so we have finished a patient
+		    subjectidArray.append(subjectid)
+		    subjectctr += 1
+		    indptrArray.append(indptrctr)
+		dataArray.append(float(cuicount))
+		indicesArray.append(int(cui)-1)
+		indptrctr += 1
+    indptrArray.append(indptrctr)
+    cols = len(col_set)
+    rows = len(subjectidArray)    
+    data = np.asarray(dataArray)
+    indices = np.asarray(indicesArray)
+
+    # we need to sort by cuis so we can figure out indptr
+    # since it deals with columns 
+    # not efficient but it's necessary
+    indptr = np.asarray(indptrArray)
+    m = sp.csr_matrix((data,indices,indptr), shape=(rows,cols))
+    print m.toarray()
+    return m
+    '''
+ 
 def get_labels_according_to_data_order (dataString = "outdata.txt",instancesString="instances.txt"):
     '''
 	This file assumes the data has already been sorted	
@@ -282,7 +364,7 @@ def get_labels_according_to_data_order (dataString = "outdata.txt",instancesStri
     dataLines = dataFile.readlines()
     dataFile.close()
     
-    patients = len(instance)-1
+    #patients = len(instance)-1
     labels = []
     patients_seen = []
     for line in dataLines:
@@ -293,6 +375,11 @@ def get_labels_according_to_data_order (dataString = "outdata.txt",instancesStri
 			if subjectid == rec.split("\t")[0]:
 				labels.append(rec.split("\t")[1].strip())
 				break
+
+    # sanity check
+    for p in instance:
+	if not p.split("\t")[0] in patients_seen:
+		print p.split("\t")[0] + " has no associated label - not appending"
     return np.asarray(labels)
 
 def fix_alldata_instances():

@@ -21,7 +21,7 @@ for i in range(len(gold_labels)):
 golddata_matrix = golddata_matrix.todense()
 
 pca = PCA()
-pca.fit(golddata_matrix)
+pca.fit(golddata_matrix.T)
 
 variance_explained = []
 for i in range(len(pca.explained_variance_ratio_)):

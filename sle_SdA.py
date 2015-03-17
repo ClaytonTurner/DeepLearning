@@ -324,10 +324,11 @@ class SdA(object):
 
         # Create a function that scans the entire test set
         def test_score():
-	    if n_test_batches == n_valid_batches:
-            	return [test_score_i(i) for i in xrange(n_test_batches)]
-	    else:
-		return [test_score_i(i) for i in xrange(n_test_batches-1)]
+	    return [test_score_i(i) for i in xrange(n_test_batches)]
+	    #if n_test_batches == n_valid_batches:
+            #	return [test_score_i(i) for i in xrange(n_test_batches)]
+	    #else:
+		#return [test_score_i(i) for i in xrange(n_test_batches-1)]
 
         return train_fn, valid_score, test_score
 
