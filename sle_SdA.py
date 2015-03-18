@@ -379,7 +379,8 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
 	#n_ins=train_set_x.shape[0] * train_set_x.shape[1],
 	n_ins=train_set_x.get_value(borrow=True).shape[1],
         #hidden_layers_sizes=[1000, 1000, 1000],
-        hidden_layers_sizes=[100],
+        #hidden_layers_sizes=[100],
+	hidden_layers_sizes=[100,100,100],
         n_outs=2
     )
     # end-snippet-3 start-snippet-4
@@ -395,7 +396,8 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
 
     print '... pre-training the model'
     ## Pre-train layer-wise
-    corruption_levels = [.1, .2, .3]
+    #corruption_levels = [.1, .2, .3]
+    corruption_levels = [.6,.7,.8]
     for i in xrange(sda.n_layers):
         # go through pretraining epochs
         for epoch in xrange(pretraining_epochs):
@@ -428,7 +430,7 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
 
     print '... finetuning the model'
     # early-stopping parameters
-    patience = 10 * n_train_batches  # look as this many examples regardless
+    patience = (10+90) * n_train_batches  # look as this many examples regardless
     patience_increase = 2.  # wait this much longer when a new best is
                             # found
     improvement_threshold = 0.995  # a relative improvement of this much is
@@ -502,4 +504,4 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
 if __name__ == '__main__':
     import sys
     batch = sys.argv[1]
-    run_SdA(pretraining_epochs=15,training_epochs=1000,batch_size=int(batch))
+    run_SdA(pretraining_epochs=0,training_epochs=1000,batch_size=int(batch),finetune_lr=.25,pretrain_lr=.25)
