@@ -41,7 +41,6 @@ for i in range(len(gold_labels)):
 
 # comment out when using FewCuis method
 #golddata_matrix = golddata_matrix.todense()
-
 #pca = RandomizedPCA(n_components)
 #pca.fit(golddata_matrix)
 #golddata_matrix = pca.transform(golddata_matrix)
@@ -64,12 +63,12 @@ def normalize(m):
 golddata_matrix = normalize(golddata_matrix)
 
 rows_in_gold = golddata_matrix.shape[0] ## == len(gold_labels)
-train_matrix = golddata_matrix[0:(rows_in_gold/3)]
-train_labels = gold_labels[0:(rows_in_gold/3)]
+train_matrix = golddata_matrix[0:(9*rows_in_gold/10)]
+train_labels = gold_labels[0:(9*rows_in_gold/10)]
 #valid_matrix = golddata_matrix[(rows_in_gold/3):(2*rows_in_gold/3)]
-valid_matrix = golddata_matrix[(rows_in_gold/3):]
+valid_matrix = golddata_matrix[(9*rows_in_gold/10):]
 #valid_labels = gold_labels[(rows_in_gold/3):(2*rows_in_gold/3)]
-valid_labels = gold_labels[(rows_in_gold/3):]
+valid_labels = gold_labels[(9*rows_in_gold/10):]
 #test_matrix = golddata_matrix[(2*rows_in_gold/3):rows_in_gold]
 test_matrix = valid_matrix
 #test_labels = gold_labels[(2*rows_in_gold/3):rows_in_gold]
@@ -79,13 +78,14 @@ pretrain_matrix = dt.readSparse(attributesString=attrfile,dataString="sle_data/a
 
 pretrain_matrix = dt.readSparseFewCuis(pretrain_matrix)
 
-#Add our training data to the pretraining
-pretrain_matrix = np.concatenate((pretrain_matrix,train_matrix))
-
 # comment out when use FewCuis method
 #pretrain_matrix = pretrain_matrix.todense()
 #pretrain_matrix = pca.transform(pretrain_matrix)
-pretrain_matrix = normalize(pretrain_matrix)
+#pretrain_matrix = normalize(pretrain_matrix)
+
+#Add our training data to the pretraining
+pretrain_matrix = np.concatenate((pretrain_matrix,train_matrix))
+
 
 pickleArray = [[train_matrix,train_labels],
 		[valid_matrix,valid_labels],
