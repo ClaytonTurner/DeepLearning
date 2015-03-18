@@ -22,8 +22,18 @@ Pretraining just sends in train_set[0] (aka, the x's of the training set)
 We need to redefine these variables since what we want to pre-train on 
 	doesn't actually have labels
 '''
+'''
+sys.argv:
+[0] = filename
+[1] = where to cut off training set
+[2] = pca components
+'''
+do_pca = len(sys.argv) > 2
+if do_pca:
+	n_components = int(sys.argv[1])
 
-#n_components = int(sys.argv[1])
+td_amt = float(sys.argv[1])
+
 attrfile = "sle_data/goldattributes.txt"
 goldDataString = "sle_data/sorted_golddata.txt"
 goldInstancesString = "sle_data/goldinstance.txt"
@@ -59,16 +69,16 @@ def normalize(m):
 	m = m.T
 	m = (m - m.min())/np.ptp(m)
 	return m.T
-#golddata_matrix = normalize(golddata_matrix, axis=0).ravel()
 golddata_matrix = normalize(golddata_matrix)
 
+
 rows_in_gold = golddata_matrix.shape[0] ## == len(gold_labels)
-train_matrix = golddata_matrix[0:(9*rows_in_gold/10)]
-train_labels = gold_labels[0:(9*rows_in_gold/10)]
+train_matrix = golddata_matrix[0:(td_amt*rows_in_gold)]
+train_labels = gold_labels[0:(td_amt*rows_in_gold)]
 #valid_matrix = golddata_matrix[(rows_in_gold/3):(2*rows_in_gold/3)]
-valid_matrix = golddata_matrix[(9*rows_in_gold/10):]
+valid_matrix = golddata_matrix[(td_amt*rows_in_gold):]
 #valid_labels = gold_labels[(rows_in_gold/3):(2*rows_in_gold/3)]
-valid_labels = gold_labels[(9*rows_in_gold/10):]
+valid_labels = gold_labels[(td_amt*rows_in_gold):]
 #test_matrix = golddata_matrix[(2*rows_in_gold/3):rows_in_gold]
 test_matrix = valid_matrix
 #test_labels = gold_labels[(2*rows_in_gold/3):rows_in_gold]
