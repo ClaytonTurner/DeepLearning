@@ -139,8 +139,12 @@ class LogisticRegression(object):
         # LP[n-1,y[n-1]]] and T.mean(LP[T.arange(y.shape[0]),y]) is
         # the mean (across minibatch examples) of the elements in v,
         # i.e., the mean log-likelihood across the minibatch.
+	#p_y_given_x_printed = theano.printing.Print("self.p_y_given_x: ")(self.p_y_given_x)
         return -T.mean(T.log(self.p_y_given_x)[T.arange(y.shape[0]), y])
         # end-snippet-2
+
+    def p_y_given_x_func(self):
+        return self.p_y_given_x
 
     def errors(self, y):
         """Return a float representing the number of errors in the minibatch
@@ -151,8 +155,7 @@ class LogisticRegression(object):
         :param y: corresponds to a vector that gives for each example the
                   correct label
         """
-
-        # check if y has same dimension of y_pred
+	        # check if y has same dimension of y_pred
         if y.ndim != self.y_pred.ndim:
             raise TypeError(
                 'y should have the same shape as self.y_pred',
@@ -162,6 +165,9 @@ class LogisticRegression(object):
         if y.dtype.startswith('int'):
             # the T.neq operator returns a vector of 0s and 1s, where 1
             # represents a mistake in prediction
+	     #y_pred_printed = theano.printing.Print("self.y_pred: ")(self.y_pred)
+	     #y = y + y_pred_printed - y_pred_printed
+
             return T.mean(T.neq(self.y_pred, y))
         else:
             raise NotImplementedError()

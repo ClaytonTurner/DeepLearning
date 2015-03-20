@@ -27,7 +27,8 @@ We need to redefine these variables since what we want to pre-train on
 sys.argv:
 [0] = filename
 [1] = where to cut off training set
-[2] = pca components
+[2] = which tenth of data to use for testing
+[3] = pca components
 '''
 do_pca = len(sys.argv) > 3
 if do_pca:
@@ -41,6 +42,7 @@ goldDataString = "sle_data/sorted_golddata.txt"
 goldInstancesString = "sle_data/goldinstance.txt"
 golddata_matrix = dt.readSparse(attributesString=attrfile,dataString=goldDataString,instancesString=goldInstancesString)
 gold_labels = dt.get_labels_according_to_data_order(dataString=goldDataString,instancesString=goldInstancesString)
+#golddata_matrix = golddata_matrix.todense()
 golddata_matrix = dt.readSparseFewCuis(golddata_matrix)
 
 for i in range(len(gold_labels)):
@@ -48,6 +50,11 @@ for i in range(len(gold_labels)):
 		gold_labels[i] = "1"
 	elif gold_labels[i] == "-100":
 		gold_labels[i] = "0"
+# comment out when using FewCuis method
+#golddata_matrix = golddata_matrix.todense()
+#pca = RandomizedPCA(n_components)
+#pca.fit(golddata_matrix)
+#golddata_matrix = pca.transform(golddata_matrix)
 
 rows_in_gold = golddata_matrix.shape[0] # == len(gold_labels)
 start = int((test_tenth-1)*rows_in_gold/10)
@@ -57,11 +64,7 @@ test_labels = gold_labels[start:end]
 golddata_matrix = np.delete(golddata_matrix,[x for x in range(start,end)],0)
 gold_labels = np.delete(gold_labels,[x for x in range(start,end)],0)
 
-# comment out when using FewCuis method
-#golddata_matrix = golddata_matrix.todense()
-#pca = RandomizedPCA(n_components)
-#pca.fit(golddata_matrix)
-#golddata_matrix = pca.transform(golddata_matrix)
+
 '''
 variance_explained = []
 for i in range(len(pca.explained_variance_ratio_)):
@@ -92,23 +95,23 @@ valid_labels = gold_labels[(td_amt*rows_in_gold):]
 #test_labels = gold_labels[(2*rows_in_gold/3):rows_in_gold]
 #test_labels = valid_labels
 
-pretrain_matrix = dt.readSparse(attributesString=attrfile,dataString="sle_data/alldata_gold_cuis_only.txt",instancesString="sle_data/allinstance_corrected.txt")
+##pretrain_matrix = dt.readSparse(attributesString=attrfile,dataString="sle_data/alldata_gold_cuis_only.txt",instancesString="sle_data/allinstance_corrected.txt")
 
-pretrain_matrix = dt.readSparseFewCuis(pretrain_matrix)
+#pretrain_matrix = dt.readSparseFewCuis(pretrain_matrix)
 
 # comment out when use FewCuis method
-#pretrain_matrix = pretrain_matrix.todense()
-#pretrain_matrix = pca.transform(pretrain_matrix)
-#pretrain_matrix = normalize(pretrain_matrix)
+##pretrain_matrix = pretrain_matrix.todense()
+##pretrain_matrix = pca.transform(pretrain_matrix)
+##pretrain_matrix = normalize(pretrain_matrix)
 
 #Add our training data to the pretraining
-pretrain_matrix = np.concatenate((pretrain_matrix,train_matrix))
+##pretrain_matrix = np.concatenate((pretrain_matrix,train_matrix))
 
 pickleArray = [[train_matrix,train_labels],
 		[valid_matrix,valid_labels],
 		[test_matrix,test_labels],
-		[pretrain_matrix]]
-		#[train_matrix]]
+		#[pretrain_matrix]]
+		[train_matrix]]
 f = gzip.open("sle.pkl.gz","wb")
 pickle.dump(pickleArray,f)
 f.close()

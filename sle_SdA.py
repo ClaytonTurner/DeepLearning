@@ -47,6 +47,7 @@ from denoisingAutoencoder import dA
 
 #theano.config.optimizer='None'
 #theano.config.exception_verbosity='high'
+theano.config.on_unused_input='ignore'
 
 # start-snippet-1
 class SdA(object):
@@ -180,7 +181,13 @@ class SdA(object):
         # compute the gradients with respect to the model parameters
         # symbolic variable that points to the number of errors made on the
         # minibatch given by self.x and self.y
-        self.errors = self.logLayer.errors(self.y)
+
+	self.errors = self.logLayer.errors(self.y)
+	self.p_y_given_x_func = self.logLayer.p_y_given_x_func()
+	errors_printed = theano.printing.Print("self.errors: ")(self.errors)
+        errors_printed = self.logLayer.errors(self.y)
+	errors = self.errors + errors_printed - errors_printed
+	print self.errors
 
     def pretraining_functions(self, train_set_x, batch_size):
         ''' Generates a list of functions, each of them implementing one
@@ -330,7 +337,24 @@ class SdA(object):
 	    #else:
 		#return [test_score_i(i) for i in xrange(n_test_batches-1)]
 
-        return train_fn, valid_score, test_score
+        p_y_given_x_i = theano.function(
+            [index],
+            self.p_y_given_x_func,
+            givens={
+                self.x: valid_set_x[
+                    index * batch_size: (index + 1) * batch_size
+                ],
+                self.y: valid_set_y[
+                    index * batch_size: (index + 1) * batch_size
+                ]
+            },
+            name='p_y_given_x_i'
+        )
+
+        def p_y_given_x():
+	    return [p_y_given_x_i(i) for i in xrange(n_test_batches)]
+
+        return train_fn, valid_score, test_score, p_y_given_x
 
 
 def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
@@ -379,8 +403,9 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
 	#n_ins=train_set_x.shape[0] * train_set_x.shape[1],
 	n_ins=train_set_x.get_value(borrow=True).shape[1],
         #hidden_layers_sizes=[1000, 1000, 1000],
-        #hidden_layers_sizes=[100],
-	hidden_layers_sizes=[100,100,100],
+        hidden_layers_sizes=[100],
+	#hidden_layers_sizes=[100,100,100],
+	#hidden_layers_sizes=[10,10,10],
         n_outs=2
     )
     # end-snippet-3 start-snippet-4
@@ -396,8 +421,8 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
 
     print '... pre-training the model'
     ## Pre-train layer-wise
-    #corruption_levels = [.1, .2, .3]
-    corruption_levels = [.6,.7,.8]
+    corruption_levels = [.1, .2, .3]
+    #corruption_levels = [.6,.7,.8]
     for i in xrange(sda.n_layers):
         # go through pretraining epochs
         for epoch in xrange(pretraining_epochs):
@@ -408,8 +433,6 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
                 c.append(pretraining_fns[i](index=batch_index,
                          corruption=corruption_levels[i],
                          lr=pretrain_lr))
-		#if batch_index == 2:
-		#	lkadjf = lkjdf
             print 'Pre-training layer %i, epoch %d, cost ' % (i, epoch),
             print numpy.mean(c)
 
@@ -421,7 +444,7 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
 
     # get the training, validation and testing function for the model
     print '... getting the finetuning functions'
-    train_fn, validate_model, test_model = sda.build_finetune_functions(
+    train_fn, validate_model, test_model, p_y_given_x = sda.build_finetune_functions(
         #datasets=datasets,
 	datasets=datasets[0:3],
         batch_size=batch_size,
@@ -447,11 +470,13 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
 
     done_looping = False
     epoch = 0
-
+    best_p_values = []
     while (epoch < training_epochs) and (not done_looping):
         epoch = epoch + 1
         for minibatch_index in xrange(n_train_batches):
             minibatch_avg_cost = train_fn(minibatch_index)
+            p_values = p_y_given_x()
+            
             iter = (epoch - 1) * n_train_batches + minibatch_index
 
             if (iter + 1) % validation_frequency == 0:
@@ -470,6 +495,7 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
                         improvement_threshold
                     ):
                         patience = max(patience, iter * patience_increase)
+			best_p_values = p_values
 
                     # save best validation score and iteration number
                     best_validation_loss = this_validation_loss
@@ -486,6 +512,17 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
             if patience <= iter:
                 done_looping = True
                 break
+    print "best logistic values:"
+    logreg = numpy.asarray(best_p_values)
+    import os
+    fname = os.path.expanduser("~/DeepLearning/results/fold1.reg")
+    while(os.path.isfile(fname)):
+	val = int(fname.split("fold")[1].split(".")[0])
+	fname = os.path.expanduser("~/DeepLearning/results/fold"+str(val+1)+".reg")
+    with file(fname,'w') as outfile:
+	for slice_2d in logreg:
+		numpy.savetxt(outfile, slice_2d)
+    #numpy.savetxt(os.path.expanduser(fname),logreg,delimiter=",")
 
     end_time = time.clock()
     print(
@@ -504,4 +541,4 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
 if __name__ == '__main__':
     import sys
     batch = sys.argv[1]
-    run_SdA(pretraining_epochs=0,training_epochs=1000,batch_size=int(batch),finetune_lr=.25,pretrain_lr=.25)
+    run_SdA(pretraining_epochs=0,training_epochs=1000,batch_size=int(batch),finetune_lr=.25)
