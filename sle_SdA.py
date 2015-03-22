@@ -183,7 +183,7 @@ class SdA(object):
         # minibatch given by self.x and self.y
 
 	self.errors = self.logLayer.errors(self.y)
-	self.p_y_given_x_func = self.logLayer.p_y_given_x_func()
+	self.info = self.logLayer.info(self.sigmoid_layers[-1].output,self.y)
 	errors_printed = theano.printing.Print("self.errors: ")(self.errors)
         errors_printed = self.logLayer.errors(self.y)
 	errors = self.errors + errors_printed - errors_printed
@@ -337,29 +337,29 @@ class SdA(object):
 	    #else:
 		#return [test_score_i(i) for i in xrange(n_test_batches-1)]
 
-        p_y_given_x_i = theano.function(
+        info_i = theano.function(
             [index],
-            self.p_y_given_x_func,
+            self.info,
             givens={
-                self.x: valid_set_x[
+                self.x: test_set_x[
                     index * batch_size: (index + 1) * batch_size
                 ],
-                self.y: valid_set_y[
+                self.y: test_set_y[
                     index * batch_size: (index + 1) * batch_size
                 ]
             },
-            name='p_y_given_x_i'
+            name='info_i'
         )
 
-        def p_y_given_x():
-	    return [p_y_given_x_i(i) for i in xrange(n_test_batches)]
+        def info():
+	    return [info_i(i) for i in xrange(n_test_batches)]
 
-        return train_fn, valid_score, test_score, p_y_given_x
+        return train_fn, valid_score, test_score, info
 
 
 def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
              pretrain_lr=0.001, training_epochs=1000,
-             dataset='sle.pkl.gz', batch_size=1):
+             dataset='sle.pkl.gz', batch_size=1, fold=1):
     """
 
     :type learning_rate: float
@@ -402,8 +402,8 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
         #n_ins=28 * 28,
 	#n_ins=train_set_x.shape[0] * train_set_x.shape[1],
 	n_ins=train_set_x.get_value(borrow=True).shape[1],
-        #hidden_layers_sizes=[1000, 1000, 1000],
-        hidden_layers_sizes=[100],
+        hidden_layers_sizes=[1000, 1000, 1000],
+        #hidden_layers_sizes=[100],
 	#hidden_layers_sizes=[100,100,100],
 	#hidden_layers_sizes=[10,10,10],
         n_outs=2
@@ -444,7 +444,7 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
 
     # get the training, validation and testing function for the model
     print '... getting the finetuning functions'
-    train_fn, validate_model, test_model, p_y_given_x = sda.build_finetune_functions(
+    train_fn, validate_model, test_model, info = sda.build_finetune_functions(
         #datasets=datasets,
 	datasets=datasets[0:3],
         batch_size=batch_size,
@@ -475,7 +475,6 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
         epoch = epoch + 1
         for minibatch_index in xrange(n_train_batches):
             minibatch_avg_cost = train_fn(minibatch_index)
-            p_values = p_y_given_x()
             
             iter = (epoch - 1) * n_train_batches + minibatch_index
 
@@ -495,11 +494,11 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
                         improvement_threshold
                     ):
                         patience = max(patience, iter * patience_increase)
-			best_p_values = p_values
-
+			
                     # save best validation score and iteration number
                     best_validation_loss = this_validation_loss
                     best_iter = iter
+                    results = info()
 
                     # test it on the test set
                     test_losses = test_model()
@@ -509,21 +508,49 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
                           (epoch, minibatch_index + 1, n_train_batches,
                            test_score * 100.))
 
+		    best_p_values = []
+		    best_y = []
+		    best_y_pred = []
+		    for j in range(len(results)):
+		    	p_values = results[j][0]
+		    	y_pred = results[j][1]
+		    	y = results[j][2]
+		    	for i in range(numpy.size(p_values,axis=0)):
+		        	#print round(p_values[i,1]),y_pred,y,test_losses[j]
+		        	best_p_values.append(p_values[i,1])
+		        	best_y.append(y[i])
+		        	best_y_pred.append(y_pred[i])
+
             if patience <= iter:
                 done_looping = True
                 break
+    best_p_values_a = numpy.asarray(best_p_values)
+    best_y_a = numpy.asarray(best_y)
+    import os
+    if fold < 10:
+      fold = "0"+str(fold)
+    else:
+      fold = str(fold)
+    fname = os.path.expanduser("~/DeepLearning/results/"+fold)
+    numpy.savetxt(fname+"_labels.txt", best_y_a)
+    numpy.savetxt(fname+"_p_values.txt", best_p_values_a)
     print "best logistic values:"
+    """
     logreg = numpy.asarray(best_p_values)
     import os
     fname = os.path.expanduser("~/DeepLearning/results/fold1.reg")
     while(os.path.isfile(fname)):
 	val = int(fname.split("fold")[1].split(".")[0])
-	fname = os.path.expanduser("~/DeepLearning/results/fold"+str(val+1)+".reg")
+	if val < 9:
+		init = "~/DeepLearning/results/fold0"
+	else:
+		init = "~/DeepLearning/results/fold"
+	fname = os.path.expanduser(init+str(val+1)+".reg")
     with file(fname,'w') as outfile:
 	for slice_2d in logreg:
 		numpy.savetxt(outfile, slice_2d)
     #numpy.savetxt(os.path.expanduser(fname),logreg,delimiter=",")
-
+    """
     end_time = time.clock()
     print(
         (
@@ -541,4 +568,5 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
 if __name__ == '__main__':
     import sys
     batch = sys.argv[1]
-    run_SdA(pretraining_epochs=0,training_epochs=1000,batch_size=int(batch),finetune_lr=.25)
+    fold = int(sys.argv[2])
+    run_SdA(pretraining_epochs=15,training_epochs=1000,batch_size=int(batch),finetune_lr=.25,fold=fold)

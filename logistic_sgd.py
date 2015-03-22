@@ -143,8 +143,8 @@ class LogisticRegression(object):
         return -T.mean(T.log(self.p_y_given_x)[T.arange(y.shape[0]), y])
         # end-snippet-2
 
-    def p_y_given_x_func(self):
-        return self.p_y_given_x
+    def info(self, x, y):
+        return [T.nnet.softmax(T.dot(x, self.W) + self.b), self.y_pred, y]
 
     def errors(self, y):
         """Return a float representing the number of errors in the minibatch
