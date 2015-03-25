@@ -45,11 +45,35 @@ gold_labels = dt.get_labels_according_to_data_order(dataString=goldDataString,in
 #golddata_matrix = golddata_matrix.todense()
 golddata_matrix = dt.readSparseFewCuis(golddata_matrix)
 
+#pretrain_matrix_list = []
+balancefactor = 85
+posf = 0
+negf = 0
+
 for i in range(len(gold_labels)):
-	if gold_labels[i] == "100":
+	if i == 0:
+		pretrain_matrix = golddata_matrix[i]
+		if gold_labels[i] == "100":
+			posf += 1
+			gold_labels[i] = "1"
+		else:
+			negf += 1
+			gold_labels[i] = 0
+	elif gold_labels[i] == "100":
+		if posf < balancefactor:
+			pretrain_matrix = np.concatenate([pretrain_matrix,golddata_matrix[i]])
+			#pretrain_matrix_list.append(golddata_matrix[i])
+		posf += 1
 		gold_labels[i] = "1"
 	elif gold_labels[i] == "-100":
+		if negf < balancefactor:
+			pretrain_matrix = np.concatenate([pretrain_matrix,golddata_matrix[i]])
+			#pretrain_matrix_list.append(golddata_matrix[i])
+		negf += 1
 		gold_labels[i] = "0"
+
+print pretrain_matrix
+#pretrain_matrix = np.asmatrix(pretrain_matrix_list)
 # comment out when using FewCuis method
 #golddata_matrix = golddata_matrix.todense()
 #pca = RandomizedPCA(n_components)
@@ -107,11 +131,14 @@ valid_labels = gold_labels[(td_amt*rows_in_gold):]
 #Add our training data to the pretraining
 ##pretrain_matrix = np.concatenate((pretrain_matrix,train_matrix))
 
+print type(pretrain_matrix)
+print type(train_matrix)
+
 pickleArray = [[train_matrix,train_labels],
 		[valid_matrix,valid_labels],
 		[test_matrix,test_labels],
-		#[pretrain_matrix]]
-		[train_matrix]]
+		[pretrain_matrix]]
+		#[train_matrix]]
 f = gzip.open("sle.pkl.gz","wb")
 pickle.dump(pickleArray,f)
 f.close()

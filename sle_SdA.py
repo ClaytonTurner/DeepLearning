@@ -46,7 +46,7 @@ from multilayer_perceptron import HiddenLayer
 from denoisingAutoencoder import dA
 
 #theano.config.optimizer='None'
-#theano.config.exception_verbosity='high'
+theano.config.exception_verbosity='high'
 theano.config.on_unused_input='ignore'
 
 # start-snippet-1
@@ -402,8 +402,8 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
         #n_ins=28 * 28,
 	#n_ins=train_set_x.shape[0] * train_set_x.shape[1],
 	n_ins=train_set_x.get_value(borrow=True).shape[1],
-        hidden_layers_sizes=[1000, 1000, 1000],
-        #hidden_layers_sizes=[100],
+        #hidden_layers_sizes=[1000, 1000, 1000],
+        hidden_layers_sizes=[100],
 	#hidden_layers_sizes=[100,100,100],
 	#hidden_layers_sizes=[10,10,10],
         n_outs=2
@@ -517,10 +517,9 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
 		    	y = results[j][2]
 		    	for i in range(numpy.size(p_values,axis=0)):
 		        	#print round(p_values[i,1]),y_pred,y,test_losses[j]
-		        	best_p_values.append(p_values[i,1])
-		        	best_y.append(y[i])
+		        	best_p_values.append(p_values[i,0]) # 1 for yes sle, 0 for no sle
+		        	best_y.append(1-y[i])
 		        	best_y_pred.append(y_pred[i])
-
             if patience <= iter:
                 done_looping = True
                 break
@@ -569,4 +568,4 @@ if __name__ == '__main__':
     import sys
     batch = sys.argv[1]
     fold = int(sys.argv[2])
-    run_SdA(pretraining_epochs=15,training_epochs=1000,batch_size=int(batch),finetune_lr=.25,fold=fold)
+    run_SdA(pretraining_epochs=0,training_epochs=1000,batch_size=int(batch),finetune_lr=.25,fold=fold)
