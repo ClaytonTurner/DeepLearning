@@ -1,7 +1,7 @@
 
 import os
 init = os.getcwd()
-successes = ['success1','success2','success3','success4','success5']
+successes = ['success1','success2','success3','success4','success5','success6']
 
 for success in successes:
 	os.chdir(os.path.join(init,success))

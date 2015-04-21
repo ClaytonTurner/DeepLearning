@@ -6,7 +6,7 @@ results = os.listdir(os.getcwd())
 test_errors = []
 i = 0
 for res in results:
-	if not res[-4:] == ".swp":
+	if not res[-4:] == ".swp" and not os.path.isdir(res):
 		i += 1
 		f = open(res,"r")
 		line = f.readlines()[-1]
