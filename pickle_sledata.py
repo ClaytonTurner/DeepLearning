@@ -6,6 +6,7 @@ import data_tweaking as dt
 from sklearn.decomposition import RandomizedPCA
 from sklearn.preprocessing import normalize
 import sys
+import random
 '''
 pickleArray[0] = train_set
 	pickleArray[0][0] = x 
@@ -46,6 +47,10 @@ gold_labels = dt.get_labels_according_to_data_order(dataString=goldDataString,in
 golddata_matrix = dt.readSparseFewCuis(golddata_matrix)
 
 #pretrain_matrix_list = []
+'''
+# This code was used when trying to balance the 
+# pretraining with respect to how many negative samples we have
+# This is being replaced with a bootstrap section of code
 balancefactor = 85
 posf = 0
 negf = 0
@@ -58,7 +63,7 @@ for i in range(len(gold_labels)):
 			gold_labels[i] = "1"
 		else:
 			negf += 1
-			gold_labels[i] = 0
+			gold_labels[i] = "0"
 	elif gold_labels[i] == "100":
 		if posf < balancefactor:
 			pretrain_matrix = np.concatenate([pretrain_matrix,golddata_matrix[i]])
@@ -73,6 +78,30 @@ for i in range(len(gold_labels)):
 		gold_labels[i] = "0"
 
 print pretrain_matrix
+'''
+switch = False
+for i in range(len(gold_labels)):
+	if not switch:
+		if gold_labels[i] == "-100":
+			bootstrap_pretrain = golddata_matrix[i]
+			switch = True
+	elif gold_labels[i] == "-100":
+		np.concatenate([bootstrap_pretrain,golddata_matrix[i]])
+
+for i in range(len(gold_labels)):
+	if i == 0:
+		pretrain_matrix = golddata_matrix[i]
+		if gold_labels[i] == "100":
+			gold_labels[i] = "1"
+		else:
+			gold_labels[i] = "0"
+	elif gold_labels[i] == "100":# for fixing the labels AND bootstrapping a negative
+		pretrain_matrix = np.concatenate([pretrain_matrix,golddata_matrix[i]])
+		pretrain_matrix = np.concatenate([pretrain_matrix,bootstrap_pretrain[random.randint(0,i)]]) # add a random negative pretrain row
+		gold_labels[i] = "1"
+	elif gold_labels[i] == "-100":# for fixing the labels
+		gold_labels[i] = "0"
+
 #pretrain_matrix = np.asmatrix(pretrain_matrix_list)
 # comment out when using FewCuis method
 #golddata_matrix = golddata_matrix.todense()
