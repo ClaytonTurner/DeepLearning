@@ -97,7 +97,7 @@ for i in range(len(gold_labels)):
 			gold_labels[i] = "0"
 	elif gold_labels[i] == "100":# for fixing the labels AND bootstrapping a negative
 		pretrain_matrix = np.concatenate([pretrain_matrix,golddata_matrix[i]])
-		pretrain_matrix = np.concatenate([pretrain_matrix,bootstrap_pretrain[random.randint(0,i)]]) # add a random negative pretrain row
+		pretrain_matrix = np.concatenate([pretrain_matrix,bootstrap_pretrain[random.randint(0,len(bootstrap_pretrain))]]) # add a random negative pretrain row
 		gold_labels[i] = "1"
 	elif gold_labels[i] == "-100":# for fixing the labels
 		gold_labels[i] = "0"
