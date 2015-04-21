@@ -86,7 +86,7 @@ for i in range(len(gold_labels)):
 			bootstrap_pretrain = golddata_matrix[i]
 			switch = True
 	elif gold_labels[i] == "-100":
-		np.concatenate([bootstrap_pretrain,golddata_matrix[i]])
+		bootstrap_pretrain = np.concatenate([bootstrap_pretrain,golddata_matrix[i]])
 
 for i in range(len(gold_labels)):
 	if i == 0:
