@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<entry key="arffRelation">sle-cui</entry>
+<entry key="instanceClassQuery"><![CDATA[
+        select a.noteid, 
+                b.diagnosis
+        from ytex.sle_patients b join ytex.sle_notes a 
+        on a.subjectid=b.subjectid where b.diagnosis is not null
+]]></entry>
+<entry key="numericWordQuery"><![CDATA[
+        select f.noteid, code, COUNT(*)
+        from ytex.v_document_ontoanno o
+        inner join ytex.document d on d.document_id = o.document_id
+        inner join ytex.sle_notes f on f.noteid = d.instance_id
+        where polarity <> -1
+        and d.analysis_batch = '05072015-batch'
+        group by f.noteid, code
+]]></entry>
+</properties>
