@@ -1,7 +1,7 @@
 
 import os
 init = os.getcwd()
-successes = ['success1','success2','success3','success4','success5','success6']
+successes = ['success1','success2','success3','success4','success5','success6','success7','success8']
 
 for success in successes:
 	os.chdir(os.path.join(init,success))
@@ -31,9 +31,18 @@ for success in successes:
 			else:
 				f_p += 1
 
-	sensitivity = float(t_p)/float(t_p+f_n)
-	specificity = float(t_n)/float(f_p+t_n)
-	precision = float(t_p)/float(t_p+f_p)
+	if (t_p+f_n) == 0:
+		sensitivity = "DNE"
+	else:
+		sensitivity = float(t_p)/float(t_p+f_n)
+	if (f_p+t_n) == 0:
+		specificity = "DNE"
+	else:
+		specificity = float(t_n)/float(f_p+t_n)
+	if (t_p+f_p) == 0:
+		precision = "DNE"
+	else:
+		precision = float(t_p)/float(t_p+f_p)
 
 	string = '\n'.join(["TP: "+str(t_p),"FP: "+str(f_p),"TN: "+str(t_n),"FN: "+str(f_n),"Sensitivity: "+str(sensitivity),"Specificity: "+str(specificity),"Precision: "+str(precision)])
 	f = open("confusion.txt","w")

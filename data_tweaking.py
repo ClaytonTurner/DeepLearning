@@ -236,7 +236,7 @@ def readSparse (attributesString = "attributes.txt",dataString = "outdata.txt",i
 
     # For shape of array
     rows = len(instance)
-    if dataString == 'sle_data/sorted_golddata.txt':
+    if dataString == 'sle_data/sorted_golddata.txt' or dataString == 'sle_data/final/golddata.txt':
 	rows -= 1 # -1 because we have a subjectid that has no label and we have to get rid of them
     cols = len(attributes)
 
