@@ -1,8 +1,8 @@
 
 import os
 init = os.getcwd()
-successes = ['success'+str(x) for x in range(1,11)]
-#successes = ['success1','success2','success3','success4','success5','success6','success7','success8']
+#successes = ['success'+str(x) for x in range(1,14)]
+successes = ['success13']#['success1','success2','success3','success4','success5','success6','success7','success8']
 
 for success in successes:
 	os.chdir(os.path.join(init,success))
@@ -12,7 +12,10 @@ for success in successes:
 	f = open("labels.txt","r")
 	labels = f.readlines()
 	f.close()
-
+	acc = 0
+	for l in labels:
+		acc += round(float(l.strip()))
+	print "acc: ",acc
 	t_n = 0
 	t_p = 0
 	f_n = 0
@@ -25,6 +28,7 @@ for success in successes:
 			if float(label.strip()) > 0.5:
 				t_p += 1
 			else:
+				print label.strip(),round(float(p.strip()))
 				t_n += 1
 		else:
 			if float(label.strip()) > 0.5:

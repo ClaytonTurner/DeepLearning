@@ -35,7 +35,7 @@ do_pca = len(sys.argv) > 3
 if do_pca:
 	n_components = int(sys.argv[3])
 else:
-	n_components = 1000
+	n_components = 100
 
 td_amt = float(sys.argv[1]) # amount of data to use as training; inverse is validation
 test_tenth = int(sys.argv[2]) # assuming a value 1-10
@@ -141,7 +141,8 @@ def normalize(m):
 	m = m.T
 	m = (m - m.min())/np.ptp(m)
 	return m.T
-golddata_matrix = normalize(golddata_matrix)
+golddata_matrix[:,:-1] = normalize(golddata_matrix[:,:-1])
+#golddata_matrix = normalize(golddata_matrix)
 
 
 rows_in_gold = golddata_matrix.shape[0] ## redefine since we removed test set
@@ -171,6 +172,11 @@ pretrain_matrix = normalize(pretrain_matrix)
 
 print type(pretrain_matrix)
 print type(train_matrix)
+
+acc = 0
+for i in train_labels:
+	acc += round(float(i))
+print acc
 
 pickleArray = [[train_matrix,train_labels],
 		[valid_matrix,valid_labels],
