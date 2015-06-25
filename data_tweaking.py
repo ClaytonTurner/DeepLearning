@@ -296,7 +296,8 @@ def readSparseFewCuis(mat):
     dataLines = dataFile.readlines()
     dataFile.close()
     '''
-    attrFile = open("sle_data/goldattributes.txt","r")
+    #attrFile = open("sle_data/goldattributes.txt","r")
+    attrFile = open("sle_data/final/goldattributes.txt","r")
     mat = mat.todense()
     attributes = attrFile.readlines()
     attrFile.close()
