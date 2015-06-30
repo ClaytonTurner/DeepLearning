@@ -403,8 +403,8 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
 	#n_ins=train_set_x.shape[0] * train_set_x.shape[1],
 	n_ins=train_set_x.get_value(borrow=True).shape[1],
         #hidden_layers_sizes=[1000, 1000, 1000],
-        #hidden_layers_sizes=[100],
-	hidden_layers_sizes=[10,10,10,10,10],
+        hidden_layers_sizes=[100],
+	#hidden_layers_sizes=[10,10,10,10,10],
 	#hidden_layers_sizes=[1000,1000,1000,1000,1000],
 	#hidden_layers_sizes=[10],
 	#hidden_layers_sizes=[100,100,100],
@@ -424,9 +424,9 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
 
     print '... pre-training the model'
     ## Pre-train layer-wise
-    #corruption_levels = [.1, .2, .3]
+    corruption_levels = [.1, .2, .3]
     #corruption_levels = [.1,.2,.3,.4,.5]
-    corruption_levels = [.1,.1,.1,.1,.1]
+    #corruption_levels = [.1,.1,.1,.1,.1]
     #corruption_levels = [.6,.7,.8]
     for i in xrange(sda.n_layers):
         # go through pretraining epochs
@@ -528,6 +528,10 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
                 done_looping = True
                 break
     best_p_values_a = numpy.asarray(best_p_values)
+    p_values_output = []
+    for i in range(len(best_p_values_a)):
+      p_values_output.append(str(test_set_x[i][0])+","+str(best_p_values_a[i]))
+    best_p_values_a = numpy.asarray(p_values_output)
     best_y_a = numpy.asarray(best_y)
     import os
     if fold < 10:
@@ -536,7 +540,10 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
       fold = str(fold)
     fname = os.path.expanduser("~/DeepLearning/results/"+fold)
     numpy.savetxt(fname+"_labels.txt", best_y_a)
-    numpy.savetxt(fname+"_p_values.txt", best_p_values_a)
+    #numpy.savetxt(fname+"_p_values.txt", best_p_values_a)
+    f = open(fname+"_p_values.txt","w")
+    f.write("\n".join(p_values_output))
+    f.close()
     print "best logistic values:"
     
     end_time = time.clock()

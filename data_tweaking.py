@@ -246,7 +246,10 @@ def readSparse (attributesString = "attributes.txt",dataString = "outdata.txt",i
     subjectctr = -1
     indptrctr = 0
     indptrArray = []
+    i = 0
     for line in dataLines:
+	print i
+	i += 1
         subjectid,cui,cuicount = line.split("\t")
         cuicount = cuicount.strip()
         if subjectid not in subjectidArray and (not subjectid =='9011286'): # this is because we have data but no label for this patient

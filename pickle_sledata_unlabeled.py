@@ -75,12 +75,13 @@ train_labels = gold_labels[0:(td_amt*rows_in_gold)]
 valid_matrix = golddata_matrix[(td_amt*rows_in_gold):]
 valid_labels = gold_labels[(td_amt*rows_in_gold):]
 
-test_matrix = dt.readSparse(attributesString=attrfile,dataString="sle_data/final/final_data_all.txt",instancesString=goldInstancesString)
+test_matrix = dt.readSparse(attributesString=attrfile,dataString="sle_data/final/final_data_all.txt",instancesString="sle_data/allinstance.txt")
 
 test_matrix = dt.readSparseFewCuis(test_matrix)
 test_labels = np.asarray([0 for x in range(len(test_matrix))])
 
 print type(train_matrix)
+print "size of test:",len(test_matrix)
 
 pickleArray = [[train_matrix,train_labels],
 		[valid_matrix,valid_labels],
