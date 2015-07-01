@@ -41,14 +41,14 @@ td_amt = float(sys.argv[1]) # amount of data to use as training; inverse is vali
 test_tenth = int(sys.argv[2]) # assuming a value 1-10
 
 #attrfile = "sle_data/goldattributes.txt"
-attrfile = "sle_data/final/full_attributes.txt" # equivalent to ".../goldattributes.txt"
+attrfile = "sle_data/final/goldattributes.txt" # equivalent to ".../goldattributes.txt"
 #goldDataString = "sle_data/sorted_golddata.txt"
 goldDataString = "sle_data/final/golddata.txt"
 #goldInstancesString = "sle_data/goldinstance.txt"
 goldInstancesString = "sle_data/final/full_instance_modified.txt"
 golddata_matrix = dt.readSparse(attributesString=attrfile,dataString=goldDataString,instancesString=goldInstancesString)
 gold_labels = dt.get_labels_according_to_data_order(dataString=goldDataString,instancesString=goldInstancesString)
-golddata_matrix = dt.readSparseFewCuis(golddata_matrix)
+#golddata_matrix = dt.readSparseFewCuis(golddata_matrix)
 
 #pretrain_matrix_list = []
 '''
@@ -111,10 +111,10 @@ for i in range(len(gold_labels)):
 
 #pretrain_matrix = np.asmatrix(pretrain_matrix_list)
 # comment out when using FewCuis method
-#golddata_matrix = golddata_matrix.todense()
-#pca = RandomizedPCA(n_components)
-#pca.fit(golddata_matrix)
-#golddata_matrix = pca.transform(golddata_matrix)
+golddata_matrix = golddata_matrix.todense()
+pca = RandomizedPCA(n_components)
+pca.fit(golddata_matrix)
+golddata_matrix = pca.transform(golddata_matrix)
 
 rows_in_gold = golddata_matrix.shape[0] # == len(gold_labels)
 start = int((test_tenth-1)*rows_in_gold/10)
@@ -155,14 +155,14 @@ valid_labels = gold_labels[(td_amt*rows_in_gold):]
 #test_labels = valid_labels
 
 #pretrain_matrix = dt.readSparse(attributesString=attrfile,dataString="sle_data/alldata_gold_cuis_only.txt",instancesString="sle_data/allinstance_corrected.txt")
-pretrain_matrix = dt.readSparse(attributesString=attrfile,dataString="sle_data/final/final_data_all.txt",instancesString=goldInstancesString)
+pretrain_matrix = dt.readSparse(attributesString=attrfile,dataString="sle_data/final/alldata_goldcuisonly.txt",instancesString="sle_data/final/allinstance.txt")
 
-pretrain_matrix = dt.readSparseFewCuis(pretrain_matrix)
+#pretrain_matrix = dt.readSparseFewCuis(pretrain_matrix)
 
 # comment out when use FewCuis method
-#pretrain_matrix = pretrain_matrix.todense()
-#pretrain_matrix = pca.transform(pretrain_matrix)
-#pretrain_matrix = normalize(pretrain_matrix)
+pretrain_matrix = pretrain_matrix.todense()
+pretrain_matrix = pca.transform(pretrain_matrix)
+pretrain_matrix = normalize(pretrain_matrix)
 
 #Add our training data to the pretraining
 ##pretrain_matrix = np.concatenate((pretrain_matrix,train_matrix))

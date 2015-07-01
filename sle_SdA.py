@@ -404,10 +404,10 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
 	n_ins=train_set_x.get_value(borrow=True).shape[1],
         #hidden_layers_sizes=[1000, 1000, 1000],
         #hidden_layers_sizes=[100],
-	hidden_layers_sizes=[10,10,10,10,10],
+	#hidden_layers_sizes=[10,10,10,10,10],
 	#hidden_layers_sizes=[1000,1000,1000,1000,1000],
 	#hidden_layers_sizes=[10],
-	#hidden_layers_sizes=[100,100,100],
+	hidden_layers_sizes=[100,100,100],
 	#hidden_layers_sizes=[10,10,10],
         n_outs=2
     )
@@ -424,9 +424,9 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
 
     print '... pre-training the model'
     ## Pre-train layer-wise
-    #corruption_levels = [.1, .2, .3]
+    corruption_levels = [.1, .2, .3]
     #corruption_levels = [.1,.2,.3,.4,.5]
-    corruption_levels = [.1,.1,.1,.1,.1]
+    #corruption_levels = [.1,.1,.1,.1,.1]
     #corruption_levels = [.6,.7,.8]
     for i in xrange(sda.n_layers):
         # go through pretraining epochs

@@ -238,6 +238,8 @@ def readSparse (attributesString = "attributes.txt",dataString = "outdata.txt",i
     rows = len(instance)
     if dataString == 'sle_data/sorted_golddata.txt' or dataString == 'sle_data/final/golddata.txt':
 	rows -= 1 # -1 because we have a subjectid that has no label and we have to get rid of them
+    if dataString == 'sle_data/final/alldata_goldcuisonly.txt':
+	rows -= 2 # This is because 2 unlabeled patients have no data (at least no gold cuis)
     cols = len(attributes)
 
     dataArray = []
@@ -248,7 +250,6 @@ def readSparse (attributesString = "attributes.txt",dataString = "outdata.txt",i
     indptrArray = []
     i = 0
     for line in dataLines:
-	print i
 	i += 1
         subjectid,cui,cuicount = line.split("\t")
         cuicount = cuicount.strip()
