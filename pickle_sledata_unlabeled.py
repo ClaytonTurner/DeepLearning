@@ -70,12 +70,10 @@ def normalize(m):
 golddata_matrix = normalize(golddata_matrix)
 
 rows_in_gold = golddata_matrix.shape[0] ## redefine since we removed test set
-train_matrix = golddata_matrix[0:(td_amt*rows_in_gold)]
-train_labels = gold_labels[0:(td_amt*rows_in_gold)]
-valid_matrix = golddata_matrix[(td_amt*rows_in_gold):]
-valid_labels = gold_labels[(td_amt*rows_in_gold):]
+train_matrix = golddata_matrix
+train_labels = gold_labels
 
-test_matrix = dt.readSparse(attributesString=attrfile,dataString="sle_data/final/final_data_all.txt",instancesString="sle_data/allinstance.txt")
+test_matrix = dt.readSparse(attributesString=attrfile,dataString="sle_data/final/alldata_goldcuisonly.txt",instancesString="sle_data/final/allinstance.txt")
 
 test_matrix = dt.readSparseFewCuis(test_matrix)
 test_labels = np.asarray([0 for x in range(len(test_matrix))])
