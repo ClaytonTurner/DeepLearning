@@ -236,7 +236,7 @@ def readSparse (attributesString = "attributes.txt",dataString = "outdata.txt",i
 
     # For shape of array
     rows = len(instance)
-    if dataString == 'sle_data/sorted_golddata.txt' or dataString == 'sle_data/final/golddata.txt':
+    if dataString == 'sle_data/sorted_golddata.txt' or dataString == 'sle_data/final/golddata.txt':# or dataString == 'sle_data/rheumatol/gold_data.txt':
 	rows -= 1 # -1 because we have a subjectid that has no label and we have to get rid of them
     if dataString == 'sle_data/final/alldata_goldcuisonly.txt':
 	rows -= 2 # This is because 2 unlabeled patients have no data (at least no gold cuis)
@@ -253,7 +253,7 @@ def readSparse (attributesString = "attributes.txt",dataString = "outdata.txt",i
 	i += 1
         subjectid,cui,cuicount = line.split("\t")
         cuicount = cuicount.strip()
-        if subjectid not in subjectidArray and (not subjectid =='9011286'): # this is because we have data but no label for this patient
+        if subjectid not in subjectidArray:# and (not subjectid =='9011286'): # this is because we have data but no label for this patient
             # so we have finished a patient
             subjectidArray.append(subjectid)
             subjectctr += 1
@@ -385,6 +385,8 @@ def get_labels_according_to_data_order (dataString = "outdata.txt",instancesStri
     for p in instance:
 	if not p.split("\t")[0] in patients_seen:
 		print p.split("\t")[0] + " has no associated label - not appending"
+    print "1219838" in labels
+    print len(labels)
     return np.asarray(labels)
 
 def fix_alldata_instances():

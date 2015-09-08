@@ -1,0 +1,7 @@
+TP: 151
+FP: 107
+TN: 211
+FN: 171
+Sensitivity: 0.468944099379
+Specificity: 0.663522012579
+Precision: 0.585271317829

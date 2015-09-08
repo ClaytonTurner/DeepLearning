@@ -1,7 +1,7 @@
-TP: 0
-FP: 0
-TN: 308
-FN: 85
-Sensitivity: 0.0
-Specificity: 1.0
-Precision: DNE
+TP: 277
+FP: 5
+TN: 295
+FN: 23
+Sensitivity: 0.923333333333
+Specificity: 0.983333333333
+Precision: 0.982269503546

@@ -7,8 +7,7 @@ successes = [f for f in os.listdir('.') if re.match(r'success[0-9]+',f)]
 #successes = ['success1','success2','success3','success4','success5','success6','success7','success8']
 
 for success in successes:
-	print success
-	if success == "success66": # lost some files here... see success66/oops.txt
+	if success == "success66" or success == "success7": # lost some files here... see success66/oops.txt
 		continue 
 	os.chdir(os.path.join(init,success))
 	f = open("p_values.txt","r")

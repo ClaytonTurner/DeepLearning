@@ -44,13 +44,16 @@ test_tenth = int(sys.argv[2]) # assuming a value 1-10
 
 
 #attrfile = "sle_data/goldattributes.txt"
-attrfile = "sle_data/final/goldattributes.txt" # equivalent to ".../goldattributes.txt"
+#attrfile = "sle_data/final/goldattributes.txt" # equivalent to ".../goldattributes.txt"
+attrfile = "sle_data/rheumatol/attributes.txt"
 #goldDataString = "sle_data/sorted_golddata.txt"
 #goldDataString = "sle_data/final/golddata.txt"
-goldDataString = "sle_data/final/golddata_with_new_labels.txt"
+#goldDataString = "sle_data/final/golddata_with_new_labels.txt"
+goldDataString = "sle_data/rheumatol/gold_data.txt"
 #goldInstancesString = "sle_data/goldinstance.txt"
 #goldInstancesString = "sle_data/final/full_instance_modified.txt"
-goldInstancesString = "sle_data/final/more_labels_instance.txt"
+#goldInstancesString = "sle_data/final/more_labels_instance.txt"
+goldInstancesString = "sle_data/rheumatol/gold_fixed_instance.txt"
 golddata_matrix = dt.readSparse(attributesString=attrfile,dataString=goldDataString,instancesString=goldInstancesString)
 gold_labels = dt.get_labels_according_to_data_order(dataString=goldDataString,instancesString=goldInstancesString)
 #golddata_matrix = dt.readSparseFewCuis(golddata_matrix)
@@ -87,7 +90,7 @@ golddata_matrix = golddata_matrix.todense()
 #pca = RandomizedPCA(n_components)
 #pca.fit(golddata_matrix)
 #golddata_matrix = pca.transform(golddata_matrix)
-clf = ExtraTreesClassifier()
+clf = ExtraTreesClassifier(max_features=100) # "auto" is default max_features (sqrt(n))
 golddata_matrix = clf.fit(golddata_matrix,gold_labels).transform(golddata_matrix)
 
 

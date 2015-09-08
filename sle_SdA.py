@@ -403,7 +403,9 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
 	#n_ins=train_set_x.shape[0] * train_set_x.shape[1],
 	n_ins=train_set_x.get_value(borrow=True).shape[1],
         #hidden_layers_sizes=[1000, 1000, 1000],
-        hidden_layers_sizes=[100],
+        hidden_layers_sizes=[250],
+	#hidden_layers_sizes=[500],
+	#hidden_layers_sizes=[1000],
 	#hidden_layers_sizes=[100,100],
 	#hidden_layers_sizes=[10,10,10,10,10],
 	#hidden_layers_sizes=[1000,1000,1000,1000,1000],
@@ -559,4 +561,4 @@ if __name__ == '__main__':
     import sys
     batch = sys.argv[1]
     fold = int(sys.argv[2])
-    run_SdA(pretraining_epochs=15,training_epochs=10000,batch_size=int(2),finetune_lr=.1,fold=fold)
+    run_SdA(pretraining_epochs=0,training_epochs=10000,batch_size=int(10),finetune_lr=.2,fold=fold)
