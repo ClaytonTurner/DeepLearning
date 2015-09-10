@@ -240,6 +240,8 @@ def readSparse (attributesString = "attributes.txt",dataString = "outdata.txt",i
 	rows -= 1 # -1 because we have a subjectid that has no label and we have to get rid of them
     if dataString == 'sle_data/final/alldata_goldcuisonly.txt':
 	rows -= 2 # This is because 2 unlabeled patients have no data (at least no gold cuis)
+    if dataString == 'sle_data/rheumatol/for_creating_test_data/final_data.txt':
+	rows -= 7 # this is a test - not sure why it's so high
     cols = len(attributes)
 
     dataArray = []

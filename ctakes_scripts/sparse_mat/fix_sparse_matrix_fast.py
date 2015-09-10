@@ -147,7 +147,10 @@ def fix_attributes():
 	outfile.write(out)
 	outfile.close()
 
-fix_attributes()
+data()
+fix_data()
+fix_instance()
+#fix_attributes()
 
 
 
