@@ -266,7 +266,7 @@ class SdA(object):
         n_valid_batches = valid_set_x.get_value(borrow=True).shape[0]
         n_valid_batches /= batch_size
         n_test_batches = test_set_x.get_value(borrow=True).shape[0]
-        n_test_batches /= batch_size
+        #n_test_batches /= batch_size
 
 	print n_test_batches
 	print n_valid_batches

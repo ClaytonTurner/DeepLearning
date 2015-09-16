@@ -59,7 +59,7 @@ for i in range(len(gold_labels)):
 		gold_labels[i] = "0"
 
 golddata_matrix = golddata_matrix.todense()
-clf = ExtraTreesClassifier(max_features=100)
+clf = ExtraTreesClassifier(max_features="auto")
 golddata_matrix = clf.fit(golddata_matrix,gold_labels).transform(golddata_matrix)
 
 rows_in_gold = golddata_matrix.shape[0] # == len(gold_labels)
@@ -84,25 +84,31 @@ train_labels = gold_labels
 #test_matrix = dt.readSparse(attributesString=attrfile,dataString="sle_data/final/alldata_goldcuisonly.txt",instancesString="sle_data/final/allinstance.txt")
 test_matrix = dt.readSparse(attributesString=attrfile,dataString="sle_data/rheumatol/for_creating_test_data/final_data.txt",instancesString="sle_data/rheumatol/for_creating_test_data/final_instance.txt")
 test_matrix = test_matrix.todense()
-test_matrix = np.delete(test_matrix,[x for x in range(4500,int(test_matrix.shape[0]))])
+#test_matrix = np.delete(test_matrix,[x for x in range(4500,int(test_matrix.shape[0]))])
+
+#np.delete(test_matrix,[x for x in range(1500,int(test_matrix.shape[0]))])
+
+print test_matrix.shape
 
 #test_matrix = dt.readSparseFewCuis(test_matrix)
 test_labels = np.asarray([0 for x in range(len(test_matrix))])
 #test_labels = np.delete(test_labels,[x for x in range(1,int(test_labels.shape[0]))])
 test_matrix = clf.fit(test_matrix,test_labels).transform(test_matrix)
+#test_matrix = clf.fit_transform(test_matrix,test_labels)
 
 print type(train_matrix)
-print "size of test:",len(test_matrix)
+#print "size of test:",len(test_matrix)
+print test_matrix.shape
 
 pickleArray = [[train_matrix,train_labels],
-		[valid_matrix,valid_labels]]#,
-		#[test_matrix,test_labels]]#,
+		[valid_matrix,valid_labels],
+		[test_matrix,test_labels]]#,
 		#[train_matrix]]
 
 f = gzip.open("sle.pkl.gz","wb")
 pickle.dump(pickleArray,f)
 f.close()
-pickleArray2 = [test_matrix,test_labels]
-f = gzip.open("sle.pkl2.gz","wb")
-pickle.dump(pickleArray2,f)
-f.close()
+#pickleArray2 = [test_matrix,test_labels]
+#f = gzip.open("sle.pkl2.gz","wb")
+#pickle.dump(pickleArray2,f)
+#f.close()
