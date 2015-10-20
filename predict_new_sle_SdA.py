@@ -184,6 +184,8 @@ class SdA(object):
 
 	self.errors = self.logLayer.errors(self.y)
 	self.info = self.logLayer.info(self.sigmoid_layers[-1].output,self.y)
+	self.sid = self.x[0]
+	#self.sid = self.logLayer.info(self.sigmoid_layers[-1].output,self.y)
 	errors_printed = theano.printing.Print("self.errors: ")(self.errors)
         errors_printed = self.logLayer.errors(self.y)
 	errors = self.errors + errors_printed - errors_printed
@@ -353,8 +355,25 @@ class SdA(object):
 
         def info():
 	    return [info_i(i) for i in xrange(n_test_batches)]
+        
+	sid_i = theano.function(
+		[index],
+		self.sid,
+		givens={
+			self.x: test_set_x[
+				index * batch_size: (index + 1) * batch_size
+			],
+			self.y: test_set_y[
+				index * batch_size: (index + 1) * batch_size
+			]
+		},
+		name='sid_i'
+	)
 
-        return train_fn, valid_score, test_score, info
+	def sid():
+		return [sid_i(i) for i in xrange(n_test_batches)]	
+
+	return train_fn, valid_score, test_score, info, sid
 
 
 def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
@@ -403,7 +422,7 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
 	#n_ins=train_set_x.shape[0] * train_set_x.shape[1],
 	n_ins=train_set_x.get_value(borrow=True).shape[1],
         #hidden_layers_sizes=[1000, 1000, 1000],
-        hidden_layers_sizes=[100],
+        hidden_layers_sizes=[250],
 	#hidden_layers_sizes=[10,10,10,10,10],
 	#hidden_layers_sizes=[1000,1000,1000,1000,1000],
 	#hidden_layers_sizes=[10],
@@ -449,7 +468,7 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
 
     # get the training, validation and testing function for the model
     print '... getting the finetuning functions'
-    train_fn, validate_model, test_model, info = sda.build_finetune_functions(
+    train_fn, validate_model, test_model, info, sid = sda.build_finetune_functions(
         #datasets=datasets,
 	datasets=datasets[0:3],
         batch_size=batch_size,
@@ -504,6 +523,7 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
                     best_validation_loss = this_validation_loss
                     best_iter = iter
                     results = info()
+		    my_sid = sid()
 
                     # test it on the test set
                     test_losses = test_model()
@@ -530,7 +550,10 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
     best_p_values_a = numpy.asarray(best_p_values)
     p_values_output = []
     for i in range(len(best_p_values_a)):
-      p_values_output.append(str(test_set_x[i][0])+","+str(best_p_values_a[i]))
+      # my_sid seems to just be the x features but there's no id's
+      #		so let's just comment out and match up labels
+      #p_values_output.append(str(my_sid[i])+","+str(best_p_values_a[i]))
+      p_values_output.append(str(best_p_values_a[i]))
     best_p_values_a = numpy.asarray(p_values_output)
     best_y_a = numpy.asarray(best_y)
     import os
@@ -564,4 +587,4 @@ if __name__ == '__main__':
     import sys
     batch = sys.argv[1]
     fold = int(sys.argv[2])
-    run_SdA(pretraining_epochs=0,training_epochs=1000,batch_size=int(batch),finetune_lr=.25,fold=fold)
+    run_SdA(pretraining_epochs=0,training_epochs=10000,batch_size=int(batch),finetune_lr=.2,fold=fold)
