@@ -14,27 +14,14 @@ from sklearn.preprocessing import normalize
 from sklearn.ensemble import ExtraTreesClassifier
 import sys
 import random
-'''
-pickleArray[0] = train_set
-	pickleArray[0][0] = x 
-	pickleArray[0][1] = y
-pickleArray[1] = valid_set
-	pickleArray[1][0] = x
-	pickleArray[1][1] = y 
-pickleArray[2] = test_set
-	pickleArray[2][0] = x
-	pickleArray[2][1] = y
-(new part for us)
-pickleArray[3] = pretrain_set
 
-Pretraining just sends in train_set[0] (aka, the x's of the training set)
-We need to redefine these variables since what we want to pre-train on 
-	doesn't actually have labels
 
-sys.argv:
-[0] = filename
-'''
 td_amt = .85
+
+def normalize(m):
+	m = m.T
+	m = (m - m.min())/np.ptp(m)
+	return m.T
 
 #attrfile = "sle_data/final/full_attributes.txt" # equivalent to ".../goldattributes.txt"
 attrfile = "sle_data/rheumatol/attributes.txt"
@@ -59,8 +46,18 @@ for i in range(len(gold_labels)):
 		gold_labels[i] = "0"
 
 golddata_matrix = golddata_matrix.todense()
-clf = ExtraTreesClassifier(max_features="auto")
-golddata_matrix = clf.fit(golddata_matrix,gold_labels).transform(golddata_matrix)
+
+# Find out what's training now, length-wise so we can split back off after normalization
+training_rows = golddata_matrix.shape[0] 
+# Define here so we can do normalization
+test_matrix = dt.readSparse(attributesString=attrfile,dataString="sle_data/rheumatol/for_creating_test_data/final_data.txt",instancesString="sle_data/rheumatol/for_creating_test_data/final_instance.txt")
+test_matrix = test_matrix.todense()
+
+norm_matrix = normalize(np.concatenate((golddata_matrix,test_matrix),axis=0))
+golddata_matrix = norm_matrix
+test_matrix = norm_matrix[training_rows:]
+golddata_matrix = np.delete(golddata_matrix,
+	[x for x in range(training_rows,golddata_matrix.shape[0])],0)
 
 rows_in_gold = golddata_matrix.shape[0] # == len(gold_labels)
 start = int(9*rows_in_gold/10)
@@ -70,44 +67,57 @@ valid_labels = gold_labels[start:end]
 golddata_matrix = np.delete(golddata_matrix,[x for x in range(start,end)],0)
 gold_labels = np.delete(gold_labels,[x for x in range(start,end)],0)
 
+# Fit to training
+clf = ExtraTreesClassifier(max_features="auto")
+golddata_matrix = clf.fit(golddata_matrix,gold_labels).transform(golddata_matrix)
 
-def normalize(m):
-	m = m.T
-	m = (m - m.min())/np.ptp(m)
-	return m.T
-golddata_matrix = normalize(golddata_matrix)
+# Transform validation
+valid_matrix = clf.transform(valid_matrix)
+
 
 rows_in_gold = golddata_matrix.shape[0] ## redefine since we removed test set
 train_matrix = golddata_matrix
 train_labels = gold_labels
 
-#test_matrix = dt.readSparse(attributesString=attrfile,dataString="sle_data/final/alldata_goldcuisonly.txt",instancesString="sle_data/final/allinstance.txt")
-test_matrix = dt.readSparse(attributesString=attrfile,dataString="sle_data/rheumatol/for_creating_test_data/final_data.txt",instancesString="sle_data/rheumatol/for_creating_test_data/final_instance.txt")
-test_matrix = test_matrix.todense()
-#test_matrix = np.delete(test_matrix,[x for x in range(4500,int(test_matrix.shape[0]))])
-
-#np.delete(test_matrix,[x for x in range(1500,int(test_matrix.shape[0]))])
-
-print test_matrix.shape
-
-#test_matrix = dt.readSparseFewCuis(test_matrix)
 test_labels = np.asarray([0 for x in range(len(test_matrix))])
-#test_labels = np.delete(test_labels,[x for x in range(1,int(test_labels.shape[0]))])
-test_matrix = clf.fit(test_matrix,test_labels).transform(test_matrix)
-#test_matrix = clf.fit_transform(test_matrix,test_labels)
+test_matrix = clf.transform(test_matrix)
 
-print type(train_matrix)
+
+# ALTER THIS FOR GETTING NEW PATIENTS. OUT OF MEMORY ERRORS OTHERWISE. ugh
+test_matrix = np.delete(test_matrix,[x for x in range(2000,test_matrix.shape[0])],0)
+test_labels = np.delete(test_labels,[x for x in range(2000,test_matrix.shape[0])],0)
+
 #print "size of test:",len(test_matrix)
+print "Shapes for: train, valid, test"
+print train_matrix.shape
+print valid_matrix.shape
 print test_matrix.shape
 
 pickleArray = [[train_matrix,train_labels],
 		[valid_matrix,valid_labels],
-		[test_matrix,test_labels]]#,
-		#[train_matrix]]
+		[test_matrix,test_labels],
+		[train_matrix]]
 
 f = gzip.open("sle.pkl.gz","wb")
 pickle.dump(pickleArray,f)
 f.close()
+'''
+pickleArray = [train_matrix,train_labels]
+f = gzip.open("newsle1.pkl.gz","wb")
+pickle.dump(pickleArray,f)
+f.close()
+
+pickleArray = [valid_matrix,valid_labels]
+f = gzip.open("newsle2.pkl.gz","wb")
+pickle.dump(pickleArray,f)
+f.close()
+
+pickleArray = [test_matrix,test_labels]
+f = gzip.open("newsle3.pkl.gz","wb")
+pickle.dump(pickleArray,f)
+f.close()
+'''
+
 #pickleArray2 = [test_matrix,test_labels]
 #f = gzip.open("sle.pkl2.gz","wb")
 #pickle.dump(pickleArray2,f)
