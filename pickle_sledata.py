@@ -95,7 +95,7 @@ golddata_matrix = clf.fit(golddata_matrix,gold_labels).transform(golddata_matrix
 
 # Let's shuffle since our data isn't in any kind of random order
 # Doing this here so we can alternate with PCA and FewCUIs consistently
-np.random.seed(32401) # random number
+#np.random.seed(32401) # random number
 rng_state = np.random.get_state()
 np.random.shuffle(golddata_matrix)
 np.random.set_state(rng_state)
