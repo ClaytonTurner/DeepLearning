@@ -1,44 +1,34 @@
 cd ..
 
-mv sle.pkl.gz0 sle.pkl.gz
+cp sle.pkl.gz0 sle.pkl.gz
 python naive_bayes.py 1 >> results/fold01.out
-mv sle.pkl.gz sle.pkl.gz0
 
-mv sle.pkl.gz1 sle.pkl.gz
+cp sle.pkl.gz1 sle.pkl.gz
 python naive_bayes.py 2 >> results/fold02.out
-mv sle.pkl.gz sle.pkl.gz1
 
-mv sle.pkl.gz2 sle.pkl.gz
+cp sle.pkl.gz2 sle.pkl.gz
 python naive_bayes.py 3 >> results/fold03.out
-mv sle.pkl.gz sle.pkl.gz2
 
-mv sle.pkl.gz3 sle.pkl.gz
+cp sle.pkl.gz3 sle.pkl.gz
 python naive_bayes.py 4 >> results/fold04.out
-mv sle.pkl.gz sle.pkl.gz3
 
-mv sle.pkl.gz4 sle.pkl.gz
+cp sle.pkl.gz4 sle.pkl.gz
 python naive_bayes.py 5 >> results/fold05.out
-mv sle.pkl.gz sle.pkl.gz4
 
-mv sle.pkl.gz5 sle.pkl.gz
+cp sle.pkl.gz5 sle.pkl.gz
 python naive_bayes.py 6 >> results/fold06.out
-mv sle.pkl.gz sle.pkl.gz5
 
-mv sle.pkl.gz6 sle.pkl.gz
+cp sle.pkl.gz6 sle.pkl.gz
 python naive_bayes.py 7 >> results/fold07.out
-mv sle.pkl.gz sle.pkl.gz6
 
-mv sle.pkl.gz7 sle.pkl.gz
+cp sle.pkl.gz7 sle.pkl.gz
 python naive_bayes.py 8 >> results/fold08.out
-mv sle.pkl.gz sle.pkl.gz7
 
-mv sle.pkl.gz8 sle.pkl.gz
+cp sle.pkl.gz8 sle.pkl.gz
 python naive_bayes.py 9 >> results/fold09.out
-mv sle.pkl.gz sle.pkl.gz8
 
-mv sle.pkl.gz9 sle.pkl.gz
+cp sle.pkl.gz9 sle.pkl.gz
 python naive_bayes.py 10 >> results/fold10.out
-mv sle.pkl.gz sle.pkl.gz9
 
 cat results/01_p_values.txt results/02_p_values.txt results/03_p_values.txt results/04_p_values.txt results/05_p_values.txt results/06_p_values.txt results/07_p_values.txt results/08_p_values.txt results/09_p_values.txt results/10_p_values.txt > results/p_values.txt
 
