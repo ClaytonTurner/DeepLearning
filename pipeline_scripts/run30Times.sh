@@ -30,3 +30,7 @@ mv temp_labels.txt labels.txt
 mv temp_p_values.txt p_values.txt
 
 Rscript auc_ci.R > 30times_$1.txt
+
+Rscript generate_auc_curve.R
+
+mv Rplots.pdf auc_curves/$1.pdf
