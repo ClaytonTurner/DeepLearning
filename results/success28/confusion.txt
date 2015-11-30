@@ -1,7 +1,0 @@
-TP: 0
-FP: 0
-TN: 308
-FN: 85
-Sensitivity: 0.0
-Specificity: 1.0
-Precision: DNE

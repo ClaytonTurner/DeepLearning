@@ -1,7 +1,0 @@
-TP: 266
-FP: 5
-TN: 295
-FN: 34
-Sensitivity: 0.886666666667
-Specificity: 0.983333333333
-Precision: 0.981549815498
