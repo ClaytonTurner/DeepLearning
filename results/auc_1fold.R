@@ -1,7 +1,7 @@
 library(AUC)
 
-labels <- read.csv("labels.txt",sep="\n",header=F)
-predprobs <- read.csv("p_values.txt",sep="\n",header=F)
+labels <- read.csv("01_labels.txt",sep="\n",header=F)
+predprobs <- read.csv("01_p_values.txt",sep="\n",header=F)
 
 #labels <- read.csv("icd9_labels",sep="\n",header=F)
 #predprobs <- read.csv("icd9_values",sep="\n",header=F)
