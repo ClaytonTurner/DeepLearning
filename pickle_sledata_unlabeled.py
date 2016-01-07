@@ -46,6 +46,7 @@ for i in range(len(gold_labels)):
 		gold_labels[i] = "0"
 
 golddata_matrix = golddata_matrix.todense()
+np.random.shuffle(golddata_matrix)
 
 # Find out what's training now, length-wise so we can split back off after normalization
 training_rows = golddata_matrix.shape[0] 

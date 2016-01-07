@@ -518,13 +518,13 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
                         improvement_threshold
                     ):
                         patience = max(patience, iter * patience_increase)
-			
+                    
                     # save best validation score and iteration number
                     best_validation_loss = this_validation_loss
                     best_iter = iter
                     results = info()
-		    my_sid = sid()
-
+                    my_sid = sid()
+                    
                     # test it on the test set
                     test_losses = test_model()
                     test_score = numpy.mean(test_losses)
@@ -533,27 +533,30 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
                           (epoch, minibatch_index + 1, n_train_batches,
                            test_score * 100.))
 
-		    best_p_values = []
-		    best_y = []
-		    best_y_pred = []
-		    for j in range(len(results)):
-		    	p_values = results[j][0]
-		    	y_pred = results[j][1]
-		    	y = results[j][2]
-		    	for i in range(numpy.size(p_values,axis=0)):
-		        	best_p_values.append(p_values[i,0]) # 1 for yes sle, 0 for no sle
-		        	best_y.append(1-y[i])
-		        	best_y_pred.append(y_pred[i])
+                    best_p_values = []
+                    best_y = []
+                    best_y_pred = []
+                    best_p_values2 = []
+                    for j in range(len(results)):
+                        p_values = results[j][0]
+                        y_pred = results[j][1]
+                        y = results[j][2]
+                        for i in range(numpy.size(p_values,axis=0)):
+                            best_p_values.append(p_values[i,0]) # 1 for yes sle, 0 for no sle
+                            best_y.append(1-y[i])
+                            best_y_pred.append(y_pred[i])
+                            best_p_values2.append(p_values[i,1])
             if patience <= iter:
                 done_looping = True
                 break
     best_p_values_a = numpy.asarray(best_p_values)
+    best_p_values_a2 = numpy.asarray(best_p_values2)
     p_values_output = []
     for i in range(len(best_p_values_a)):
       # my_sid seems to just be the x features but there's no id's
       #		so let's just comment out and match up labels
       #p_values_output.append(str(my_sid[i])+","+str(best_p_values_a[i]))
-      p_values_output.append(str(best_p_values_a[i]))
+      p_values_output.append(str(best_p_values_a[i]))#+"\t"+str(best_p_values_a2[i]))
     best_p_values_a = numpy.asarray(p_values_output)
     best_y_a = numpy.asarray(best_y)
     import os
