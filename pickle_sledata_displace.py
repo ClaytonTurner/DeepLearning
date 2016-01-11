@@ -38,6 +38,8 @@ if do_pca:
 else:
 	n_components = 20
 
+rseed = 32401
+
 td_amt = float(sys.argv[1]) # amount of data to use as training; inverse is validation
 test_tenth = int(sys.argv[2]) # assuming a value 1-10
 
@@ -60,7 +62,7 @@ temp_list.extend(list(obeid_labels))
 gold_labels = np.array(temp_list) # Add our new labels - order is preserved
 
 # Let's shuffle since our data isn't in any kind of random order
-#np.random.seed(32401) # random number
+np.random.seed(rseed) # random number - we need this for bootstrapping consistency
 def my_shuffle(m,l):
     rng_state = np.random.get_state()
     np.random.shuffle(m)
@@ -94,6 +96,7 @@ for i in range(len(gold_labels)):
 	elif gold_labels[i] == "-100":# for fixing the labels
 		gold_labels[i] = "0"
 
+np.random.seed(rseed+1) # Keep external set consistent
 # We added bootstraps to the end of the matrix so we need to shuffle to get rid of bias
 my_shuffle(golddata_matrix,gold_labels)
 
