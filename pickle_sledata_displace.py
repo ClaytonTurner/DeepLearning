@@ -135,7 +135,7 @@ print "Length of external test labels (exp. "+str(n*2)+"):"+str(len(external_tes
 
 clf = ExtraTreesClassifier(max_features=100) # "auto" is default max_features (sqrt(n))
 golddata_matrix = clf.fit(golddata_matrix,gold_labels).transform(golddata_matrix)
-
+external_test_matrix = clf.transform(external_test_matrix)
 
 rows_in_gold = golddata_matrix.shape[0] # == len(gold_labels)
 start = int((test_tenth-1)*rows_in_gold/10)
@@ -169,7 +169,7 @@ pickle.dump(pickleArray,f)
 f.close()
 
 f = gzip.open("external_test.pkl.gz","wb")
-pickle.dump([[external_test_matrix],[np.array(external_test_labels)]],f)
+pickle.dump((external_test_matrix,np.array(external_test_labels)),f)
 f.close()
 
 '''
