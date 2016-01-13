@@ -215,7 +215,7 @@ class SdA(object):
         batch_begin = index * batch_size
         # ending of a batch given `index`
         batch_end = batch_begin + batch_size
-	pretrain_fns = []
+        pretrain_fns = []
         for dA in self.dA_layers:
             # get the cost and the updates list
             cost, updates = dA.get_cost_updates(corruption_level,
@@ -261,15 +261,17 @@ class SdA(object):
         (train_set_x, train_set_y) = datasets[0]
         (valid_set_x, valid_set_y) = datasets[1]
         (test_set_x, test_set_y) = datasets[2]
+        (external_set_x, external_set_y) = datasets[3]
 
         # compute number of minibatches for training, validation and testing
         n_valid_batches = valid_set_x.get_value(borrow=True).shape[0]
         n_valid_batches /= batch_size
         n_test_batches = test_set_x.get_value(borrow=True).shape[0]
         #n_test_batches /= batch_size
+        n_external_batches = external_set_x.get_value(borrow=True).shape[0]
 
-	print n_test_batches
-	print n_valid_batches
+        print n_test_batches
+        print n_valid_batches
 
         index = T.lscalar('index')  # index to a [mini]batch
 
@@ -325,17 +327,30 @@ class SdA(object):
             name='valid'
         )
 
+        external_score_i = theano.function(
+            [index],
+            self.errors,
+            givens = {
+                self.x: external_set_x[
+                    index * batch_size: (index + 1) * batch_size
+                ],
+                self.y: external_set_y[
+                    index * batch_size: (index + 1) * batch_size
+                ]
+            },
+            name='external'
+        )
+
         # Create a function that scans the entire validation set
         def valid_score():
             return [valid_score_i(i) for i in xrange(n_valid_batches)]
 
         # Create a function that scans the entire test set
         def test_score():
-	    return [test_score_i(i) for i in xrange(n_test_batches)]
-	    #if n_test_batches == n_valid_batches:
-            #	return [test_score_i(i) for i in xrange(n_test_batches)]
-	    #else:
-		#return [test_score_i(i) for i in xrange(n_test_batches-1)]
+            return [test_score_i(i) for i in xrange(n_test_batches)]
+
+        def external_score():
+            return [external_score_i(i) for i in xrange(n_external_batches)]
 
         info_i = theano.function(
             [index],
@@ -352,9 +367,9 @@ class SdA(object):
         )
 
         def info():
-	    return [info_i(i) for i in xrange(n_test_batches)]
+            return [info_i(i) for i in xrange(n_test_batches)]
 
-        return train_fn, valid_score, test_score, info
+        return train_fn, valid_score, test_score, info, external_score
 
 
 def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
@@ -386,6 +401,8 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
     valid_set_x, valid_set_y = datasets[1]
     test_set_x, test_set_y = datasets[2]
     pretrain_set_x = datasets[3]
+    external_set_x, external_set_y = datasets[4]
+
     #print len(train_set_y.eval())
     # compute number of minibatches for training, validation and testing
     n_train_batches = train_set_x.get_value(borrow=True).shape[0]
@@ -452,9 +469,9 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
 
     # get the training, validation and testing function for the model
     print '... getting the finetuning functions'
-    train_fn, validate_model, test_model, info = sda.build_finetune_functions(
+    train_fn, validate_model, test_model, info, external_model = sda.build_finetune_functions(
         #datasets=datasets,
-	datasets=datasets[0:3],
+	datasets=datasets[0:3]+[datasets[4]],
         batch_size=batch_size,
         learning_rate=finetune_lr
     )
@@ -507,30 +524,53 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
                     best_validation_loss = this_validation_loss
                     best_iter = iter
                     results = info()
+                    ext = external_model()
 
                     # test it on the test set
                     test_losses = test_model()
                     test_score = numpy.mean(test_losses)
+
                     print(('     epoch %i, minibatch %i/%i, test error of '
                            'best model %f %%') %
                           (epoch, minibatch_index + 1, n_train_batches,
                            test_score * 100.))
 
-		    best_p_values = []
-		    best_y = []
-		    best_y_pred = []
-		    for j in range(len(results)):
-		    	p_values = results[j][0]
-		    	y_pred = results[j][1]
-		    	y = results[j][2]
-		    	for i in range(numpy.size(p_values,axis=0)):
-		        	#print round(p_values[i,1]),y_pred,y,test_losses[j]
-		        	best_p_values.append(p_values[i,0]) # 1 for yes sle, 0 for no sle
-		        	best_y.append(1-y[i])
-		        	best_y_pred.append(y_pred[i])
+
+                    best_p_values = []
+                    best_y = []
+                    best_y_pred = []
+                    for j in range(len(results)):
+                        p_values = results[j][0]
+                        y_pred = results[j][1]
+                        y = results[j][2]
+                        for i in range(numpy.size(p_values,axis=0)):
+                        #print round(p_values[i,1]),y_pred,y,test_losses[j]
+                            best_p_values.append(p_values[i,0]) # 1 for yes sle, 0 for no sle
+                            best_y.append(1-y[i])
+                            best_y_pred.append(y_pred[i])
+
+                    best_ext_p_values = []
+                    best_ext_y = []
+                    best_ext_y_pred = []
+                    print ext
+                    for j in range(len(ext)):
+                        best_ext_y_pred.append(ext[j])
+                    '''for j in range(len(ext)):
+                        print ext[j]
+                        ext_p_values = ext[j][0]
+                        ext_y_pred = ext[j][1]
+                        ext_y = ext[j][2]
+                        for i in range(numpy.size(ext_p_values[i,0])):
+                            best_ext_p_values.append(ext_p_values[i,0])
+                            best_ext_y.append(1-ext_y[i])
+                            best_ext_y_pred.append(ext_y_pred[i])'''
+
             if patience <= iter:
                 done_looping = True
                 break
+
+    print best_ext_y_pred
+
     best_p_values_a = numpy.asarray(best_p_values)
     best_y_a = numpy.asarray(best_y)
     import os
@@ -541,6 +581,7 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
     fname = os.path.expanduser("~/DeepLearning/results/"+fold)
     numpy.savetxt(fname+"_labels.txt", best_y_a)
     numpy.savetxt(fname+"_p_values.txt", best_p_values_a)
+    numpy.savetxt(fname+"_external_p_values.txt", best_ext_y_pred) # already rounded p_values
     print "best logistic values:"
     
     end_time = time.clock()

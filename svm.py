@@ -34,6 +34,22 @@ save_probas = []
 for proba in probas:
 	save_probas.append(proba[1])
 
+# Now we want to use our external test set
+external_set = "external_test.pkl.gz"
+f = gzip.open(external_set,"rb")
+ext_sets = pickle.load(f)
+(ext_set_x,ext_set_y) = ext_sets
+f.close()
+
+ext_set_x = np.asarray(ext_set_x,dtype=np.float32)
+ext_set_y = np.asarray(ext_set_y,dtype=np.float32)
+print ext_set_x.shape
+
+ext_probas = clf.predict_proba(ext_set_x)
+save_ext_probas = []
+for proba in ext_probas:
+        save_ext_probas.append(proba[1])
+
 fold = int(sys.argv[1])
 if fold < 10:
 	fold = "0"+str(fold)

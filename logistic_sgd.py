@@ -213,6 +213,9 @@ def load_data(dataset):
     train_set, valid_set, test_set, pretrain_set = cPickle.load(f)
     #train_set, valid_set, test_set = cPickle.load(f)
     f.close()
+    f = gzip.open("external_test.pkl.gz","rb")
+    external_set = cPickle.load(f)
+    f.close()
     #train_set, valid_set, test_set format: tuple(input, target)
     #input is an numpy.ndarray of 2 dimensions (a matrix)
     #witch row's correspond to an example. target is a
@@ -263,8 +266,12 @@ def load_data(dataset):
     pretrain_set_x = theano.shared(numpy.asarray(pretrain_x,
 						dtype=theano.config.floatX),
 					borrow=True)
+
+    external_set_x, external_set_y = shared_dataset(external_set)
+
     rval = [(train_set_x, train_set_y), (valid_set_x, valid_set_y),
-            (test_set_x, test_set_y),(pretrain_set_x)]
+            (test_set_x, test_set_y),(pretrain_set_x),
+            (external_set_x,external_set_y)]
     return rval
 
 

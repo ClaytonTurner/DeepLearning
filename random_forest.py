@@ -44,7 +44,6 @@ f.close()
 
 ext_set_x = np.asarray(ext_set_x,dtype=np.float32)
 ext_set_y = np.asarray(ext_set_y,dtype=np.float32)
-print ext_set_x.shape
 
 ext_probas = clf.predict_proba(ext_set_x)
 save_ext_probas = []
