@@ -7,3 +7,4 @@ external_test.pkl*
 results/*labels.txt
 results/*p_values.txt
 results/fold*.out
+sle.bows_full.pkl.gz
