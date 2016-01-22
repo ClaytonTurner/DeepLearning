@@ -133,10 +133,12 @@ gold_labels = np.array(temp_labels)
 print "Length of external test matrix (exp. "+str(n*2)+"):"+str(external_test_matrix.shape)
 print "Length of external test labels (exp. "+str(n*2)+"):"+str(len(external_test_labels))
 
+def normalize(m):
+	m = m.T
+	m = (m - m.min())/np.ptp(m)
+	return m.T
+golddata_matrix = normalize(golddata_matrix)
 
-clf = ExtraTreesClassifier(max_features=100) # "auto" is default max_features (sqrt(n))
-golddata_matrix = clf.fit(golddata_matrix,gold_labels).transform(golddata_matrix)
-external_test_matrix = clf.transform(external_test_matrix)
 
 rows_in_gold = golddata_matrix.shape[0] # == len(gold_labels)
 start = int((test_tenth-1)*rows_in_gold/10)
@@ -146,17 +148,17 @@ test_labels = gold_labels[start:end]
 golddata_matrix = np.delete(golddata_matrix,[x for x in range(start,end)],0)
 gold_labels = np.delete(gold_labels,[x for x in range(start,end)],0)
 
-def normalize(m):
-	m = m.T
-	m = (m - m.min())/np.ptp(m)
-	return m.T
-golddata_matrix = normalize(golddata_matrix)
-
 rows_in_gold = golddata_matrix.shape[0] ## redefine since we removed test set
 train_matrix = golddata_matrix[0:(td_amt*rows_in_gold)]
 train_labels = gold_labels[0:(td_amt*rows_in_gold)]
 valid_matrix = golddata_matrix[(td_amt*rows_in_gold):]
 valid_labels = gold_labels[(td_amt*rows_in_gold):]
+
+clf = ExtraTreesClassifier(max_features=100) # "auto" is default max_features (sqrt(n))
+train_matrix = clf.fit(train_matrix,train_labels).transform(train_matrix)
+external_test_matrix = clf.transform(external_test_matrix)
+valid_matrix = clf.transform(valid_matrix)
+test_matrix = clf.transform(test_matrix)
 
 print type(train_matrix)
 
