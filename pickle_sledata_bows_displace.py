@@ -24,6 +24,9 @@ def my_shuffle(m,l):
 data = np.asarray(data)
 labels = np.array(labels)
 my_shuffle(data,labels)
+print "data shape: "+ str(data.shape)
+print "data[0] shape: "+ str(data[0].shape)
+print "labels shape: "+ str(labels.shape)
 
 # Bootstrap data
 counter = 0
@@ -31,7 +34,8 @@ counter_limit = 18
 for i in range(len(labels)):
     if labels[i] == "1":
         counter += 1
-        data = np.concatenate((data,data[i]),axis=0)
+        print "counter: "+str(counter)
+        data = np.concatenate((data,np.array([data[i]])),axis=0)
     if counter == counter_limit: break
 temp_list = list(labels)
 temp_list.extend(["1"]*counter_limit)
@@ -47,8 +51,9 @@ external_test_labels = []
 temp_labels = list(labels)
 for i in range(len(labels)):
     label = labels[i]
+    print "i: "+str(i)+" | pos: "+str(pos_count)+" | neg: "+str(neg_count)
     if i == 0:
-        external_test_matrix = data[0]
+        external_test_matrix = np.array([data[0]])
     if pos_count == n and neg_count == n: break
     if label == "1":
         if pos_count == n: continue
@@ -57,7 +62,7 @@ for i in range(len(labels)):
         if neg_count == n: continue
         neg_count += 1
     if i > 0:
-        external_test_matrix = np.concatenate((external_test_matrix,data[i-len(external_test_labels)]),axis=0)
+        external_test_matrix = np.concatenate((external_test_matrix,np.array([data[i-len(external_test_labels)]])),axis=0)
     data = np.delete(data,i-len(external_test_labels),0)
     temp_labels.pop(i-len(external_test_labels))
     external_test_labels.append(label)
@@ -76,7 +81,7 @@ data = normalize(data)
 
 rows_in_data = data.shape[0]
 start = int((test_tenth-1)*rows_in_data/10)
-end = int(test_tenth*rows_in_gold/10)
+end = int(test_tenth*rows_in_data/10)
 test_matrix = data[start:end]
 test_labels = labels[start:end]
 data = np.delete(data,[x for x in range(start,end)],0)
@@ -86,9 +91,9 @@ rows_in_data = data.shape[0]
 train_matrix = data[0:(td_amt*rows_in_data)]
 train_labels = labels[0:(td_amt*rows_in_data)]
 valid_matrix = data[(td_amt*rows_in_data):]
-valid_labels = labels[(td_amt*rows_in_gold):]
+valid_labels = labels[(td_amt*rows_in_data):]
 
-clf = ExtraTreesClassifer(max_features="auto")
+clf = ExtraTreesClassifier(max_features="auto")
 train_matrix = clf.fit(train_matrix,train_labels).transform(train_matrix)
 external_test_matrix = clf.transform(external_test_matrix)
 valid_matrix = clf.transform(valid_matrix)

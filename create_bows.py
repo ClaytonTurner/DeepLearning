@@ -28,7 +28,7 @@ def make_patient_centric():
 		# Record the diagnosis
 		if sid not in patient_diagnosis_dict:
 			sid = sid.strip()
-			if sid == "100":
+			if diagnosis == "100":
 				patient_diagnosis_dict[sid] = "1"
 			else: # Covers "0" and "-100" cases
 				patient_diagnosis_dict[sid] = "0"
@@ -142,16 +142,16 @@ def create_bow_np_array():
 			bow_counts[column_to_increment] += 1
 		np_array.append(bow_counts)
 		i += 1
-	np_array = np.asarray(np_array)
+	#np_array = np.asarray(np_array)
 	
 	# Now let's save this without headers so we can move to the server
 	import gzip
 	import cPickle as pickle 
 	f = gzip.open("sle.bows_full.pkl.gz","wb")
-	pickle.dump(np_array,f)
+	pickle.dump([np_array,labels],f)
 	f.close()
 
-#make_patient_centric()
-#reorder_data_to_match_cuis()
-#preprocessing()
+make_patient_centric()
+reorder_data_to_match_cuis()
+preprocessing()
 create_bow_np_array()
