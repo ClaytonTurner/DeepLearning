@@ -1,3 +1,8 @@
+import sys
+# Slightly different for NNs as we use Theano mechanisms
+is_nn = False
+if len(sys.argv) > 1:
+    is_nn = True
 
 # This array will be used to see which model performed best
 # We then look at that model's external test set accuracy
@@ -30,28 +35,35 @@ for i in range(10):
 # Duplicates don't bother us - we'll just take the first, best model 
 best_fold = fold_accuracies.index(max(fold_accuracies))
 print "Using fold "+str(best_fold+1)+"'s model. Had "+str(float(correct)/(float(correct)+float(incorrect)))+" accuracy"
-
-# This is an effective repeat with different files
-# We could abstract all this into a function to avoid repeats. Future TODO
 if best_fold == 9:
     index = "10"
 else:
     index = "0"+str(best_fold+1)
-f = open(index+"_external_labels.txt","r")
-labels = f.readlines()
-f.close()
-f = open(index+"_external_p_values.txt","r")
-p_values = f.readlines()
-f.close()
 
-correct = 0
-incorrect = 0
-for i in range(len(labels)):
-    label = float(labels[i].strip())
-    guess = round(float(p_values[i].strip()))
-    #print label,guess
-    if label == guess:
-        correct += 1
-    else:
-        incorrect += 1
-print float(correct)/(float(correct)+float(incorrect))
+if is_nn:
+    f = open(str(index)+"_external_accuracy.txt","r")
+    acc = float(f.read())
+    print "Accuracy for nn is: "+str(1.-acc)
+    f.close()
+else:
+    # This is an effective repeat with different files
+    # We could abstract all this into a function to avoid repeats. Future TODO
+    
+    f = open(index+"_external_labels.txt","r")
+    labels = f.readlines()
+    f.close()
+    f = open(index+"_external_p_values.txt","r")
+    p_values = f.readlines()
+    f.close()
+
+    correct = 0
+    incorrect = 0
+    for i in range(len(labels)):
+        label = float(labels[i].strip())
+        guess = round(float(p_values[i].strip()))
+        #print label,guess
+        if label == guess:
+            correct += 1
+        else:
+            incorrect += 1
+    print float(correct)/(float(correct)+float(incorrect))

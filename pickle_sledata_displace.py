@@ -154,7 +154,7 @@ train_labels = gold_labels[0:(td_amt*rows_in_gold)]
 valid_matrix = golddata_matrix[(td_amt*rows_in_gold):]
 valid_labels = gold_labels[(td_amt*rows_in_gold):]
 
-clf = ExtraTreesClassifier(max_features=100) # "auto" is default max_features (sqrt(n))
+clf = ExtraTreesClassifier(max_features=100)#"auto")#100) # "auto" is default max_features (sqrt(n))
 train_matrix = clf.fit(train_matrix,train_labels).transform(train_matrix)
 external_test_matrix = clf.transform(external_test_matrix)
 valid_matrix = clf.transform(valid_matrix)

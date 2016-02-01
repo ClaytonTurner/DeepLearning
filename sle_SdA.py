@@ -478,12 +478,14 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
 
     print '... finetuning the model'
     # early-stopping parameters
-    patience = (10+90) * n_train_batches  # look as this many examples regardless
+    patience = 10 * n_train_batches
+    #patience = (10+90) * n_train_batches  # look as this many examples regardless
     patience_increase = 2.  # wait this much longer when a new best is
                             # found
     improvement_threshold = 0.995  # a relative improvement of this much is
                                    # considered significant
     validation_frequency = min(n_train_batches, patience / 2)
+    #validation_frequency = patience/5
                                   # go through this many
                                   # minibatche before checking the network
                                   # on the validation set; in this case we
@@ -496,6 +498,9 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
     done_looping = False
     epoch = 0
     best_p_values = []
+
+    learning_over_time = []
+
     while (epoch < training_epochs) and (not done_looping):
         epoch = epoch + 1
         for minibatch_index in xrange(n_train_batches):
@@ -525,6 +530,7 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
                     best_iter = iter
                     results = info()
                     ext = external_model()
+                    ext_score = numpy.mean(ext)
 
                     # test it on the test set
                     test_losses = test_model()
@@ -534,6 +540,13 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
                            'best model %f %%') %
                           (epoch, minibatch_index + 1, n_train_batches,
                            test_score * 100.))
+
+                    # This section is so we can generate a file
+                    # which is used to create learning-over-time curves
+                    # for comparison between CV and external performance
+                    #
+                    learning_over_time.append(str(test_score)+"\t"+str(ext_score)+"\n")
+
 
 
                     best_p_values = []
@@ -569,7 +582,7 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
                 done_looping = True
                 break
 
-    print best_ext_y_pred
+    #print best_ext_y_pred
 
     best_p_values_a = numpy.asarray(best_p_values)
     best_y_a = numpy.asarray(best_y)
@@ -581,9 +594,14 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
     fname = os.path.expanduser("~/DeepLearning/results/"+fold)
     numpy.savetxt(fname+"_labels.txt", best_y_a)
     numpy.savetxt(fname+"_p_values.txt", best_p_values_a)
-    numpy.savetxt(fname+"_external_p_values.txt", best_ext_y_pred) # already rounded p_values
+    #numpy.savetxt(fname+"_external_p_values.txt", numpy.mean(best_ext_y_pred))
+    f = open(fname+"_external_accuracy.txt","w")
+    f.write(str(numpy.mean(best_ext_y_pred)))
+    f.close()
     print "best logistic values:"
-    
+    #f = open("/home/caturner3/DeepLearning/results/learning_over_time_fold"+str(fold)+".csv","w")
+    #f.writelines(learning_over_time)
+    #f.close()
     end_time = time.clock()
     print(
         (
