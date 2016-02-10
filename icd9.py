@@ -12,7 +12,7 @@ for line in lines:
 
 matrix = np.asarray(data)
 
-rseed = 31212
+rseed = 31212/4
 
 np.random.seed(rseed)
 
@@ -33,7 +33,7 @@ np.random.seed(rseed+1)
 
 np.random.shuffle(matrix)
 
-n = 25
+n = 50 
 pos_count = 0
 neg_count = 0
 external_data = []

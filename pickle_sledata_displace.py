@@ -102,7 +102,7 @@ np.random.seed(rseed+1) # Keep external set consistent
 my_shuffle(golddata_matrix,gold_labels)
 
 # We need to cut out 25 positives and 25 negatives for the external test set
-n = 25
+n = 50
 pos_count = 0
 neg_count = 0
 external_test_labels = []

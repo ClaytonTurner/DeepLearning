@@ -44,7 +44,7 @@ labels = np.array(temp_list)
 np.random.seed(rseed+1) # Consistency with other pickle file
 my_shuffle(data,labels)
 
-n = 25
+n = 50
 pos_count = 0
 neg_count = 0
 external_test_labels = []

@@ -8,3 +8,5 @@ results/*labels.txt
 results/*p_values.txt
 results/fold*.out
 sle.bows_full.pkl.gz
+results/*external*
+results/30times*

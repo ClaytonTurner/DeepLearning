@@ -48,7 +48,6 @@ if is_nn:
 else:
     # This is an effective repeat with different files
     # We could abstract all this into a function to avoid repeats. Future TODO
-    
     f = open(index+"_external_labels.txt","r")
     labels = f.readlines()
     f.close()
@@ -67,3 +66,32 @@ else:
         else:
             incorrect += 1
     print float(correct)/(float(correct)+float(incorrect))
+
+# We need to correct the labels/guesses for neural networks
+if is_nn:
+    f = open(index+"_external_labels.txt","r")
+    labels = f.readlines()
+    f.close()
+    f = open(index+"_external_p_values.txt","r")
+    p_values = f.readlines()
+    f.close()
+    nn_external_p_values = []
+    for i in range(len(labels)):
+        label = labels[i].strip()
+        p_value = p_values[i].strip()
+        if p_value == "0.0": # We were right as per Theano
+            nn_external_p_values.append(label+"\n")
+        else: # We were wrong
+            if label == "0.0":
+                nn_external_p_values.append("1.0\n")
+            else:
+                nn_external_p_values.append("0.0\n")
+    f = open(index+"_external_p_values_nn.txt","r")
+    f.write("".join(nn_external_p_values))
+    f.close()
+import subprocess
+print "Executing Rscript ext_auc.R"
+if is_nn:
+    subprocess.Popen("Rscript ext_auc.R "+str(index)+" nn",shell=True)
+else:
+    subprocess.Popen("Rscript ext_auc.R "+str(index),shell=True)
