@@ -7,12 +7,12 @@ if [ $# -lt 1 ]
 			python pickle_sledata_displace.py .85 $i $1
 			python random_forest.py $i >> results/fold0$1.out
 		done
-		python pickle_sledata_displace.py .85 10
+		python pickle_sledata_displace.py .85 10 $1
 		python random_forest.py $i >> results/fold10.out
 	else
 		for i in `seq 1 9`; do
-			python pickle_sle_data_displace.py .85 $i
-			python random_forest.py $i >> results/fold10.out
+			python pickle_sledata_displace.py .85 $i
+			python random_forest.py $i >> results/fold0$i.out
 		done
 fi
 
