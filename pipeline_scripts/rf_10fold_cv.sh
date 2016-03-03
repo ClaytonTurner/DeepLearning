@@ -8,12 +8,14 @@ if [ $# -lt 1 ]
 			python random_forest.py $i >> results/fold0$1.out
 		done
 		python pickle_sledata_displace.py .85 10 $1
-		python random_forest.py $i >> results/fold10.out
+		python random_forest.py 10 >> results/fold10.out
 	else
 		for i in `seq 1 9`; do
 			python pickle_sledata_displace.py .85 $i
 			python random_forest.py $i >> results/fold0$i.out
 		done
+		python pickle_sledata_displace.py .85 10
+		python random_forest.py 10 >> results/fold10.out
 fi
 
 cat results/01_p_values.txt results/02_p_values.txt results/03_p_values.txt results/04_p_values.txt results/05_p_values.txt results/06_p_values.txt results/07_p_values.txt results/08_p_values.txt results/09_p_values.txt results/10_p_values.txt > results/p_values.txt

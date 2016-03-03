@@ -16,6 +16,7 @@ if [ $# -lt 1 ]
 		done
 		python pickle_sledata_displace.py .85 10
 		python naive_bayes.py 10 >> results/fold10.out
+fi
 
 cat results/01_p_values.txt results/02_p_values.txt results/03_p_values.txt results/04_p_values.txt results/05_p_values.txt results/06_p_values.txt results/07_p_values.txt results/08_p_values.txt results/09_p_values.txt results/10_p_values.txt > results/p_values.txt
 
