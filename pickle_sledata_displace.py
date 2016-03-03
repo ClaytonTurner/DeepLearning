@@ -38,8 +38,7 @@ if do_pca:
 else:
 	n_components = 20
 
-#rseed = 32401
-rseed = 31212
+#rseed = 31212 # only comment out when generating confidence intervals
 
 td_amt = float(sys.argv[1]) # amount of data to use as training; inverse is validation
 test_tenth = int(sys.argv[2]) # assuming a value 1-10

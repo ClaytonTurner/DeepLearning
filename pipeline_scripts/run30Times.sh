@@ -18,6 +18,8 @@ rm temp_p_values.txt
 for i in `seq 1 30`; do	
 	./../pipeline_scripts/$1
 
+	echo "Run $i/30\n"
+
 	#append the results to a temp file
 	cat 01_p_values.txt 02_p_values.txt 03_p_values.txt 04_p_values.txt 05_p_values.txt 06_p_values.txt 07_p_values.txt 08_p_values.txt 09_p_values.txt 10_p_values.txt >> temp_p_values.txt
 	cat 01_labels.txt 02_labels.txt 03_labels.txt 04_labels.txt 05_labels.txt 06_labels.txt 07_labels.txt 08_labels.txt 09_labels.txt 10_labels.txt >> temp_labels.txt

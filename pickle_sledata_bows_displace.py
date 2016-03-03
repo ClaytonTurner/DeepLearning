@@ -6,7 +6,7 @@ from sklearn.preprocessing import normalize
 from sklearn.ensemble import ExtraTreesClassifier
 import sys
 
-rseed = 31212
+#rseed = 31212 # Only comment out whenever generating CI's
 
 td_amt = float(sys.argv[1])
 test_tenth = int(sys.argv[2])
