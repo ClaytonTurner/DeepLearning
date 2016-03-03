@@ -16,7 +16,7 @@ rm temp_labels.txt
 rm temp_p_values.txt
 
 for i in `seq 1 30`; do	
-	./../pipeline_scripts/$1
+	./../pipeline_scripts/$1 $i
 
 	echo "Run $i/30\n"
 

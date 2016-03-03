@@ -32,16 +32,18 @@ sys.argv:
 [2] = which tenth of data to use for testing
 [3] = pca components
 '''
-do_pca = len(sys.argv) > 3
-if do_pca:
-	n_components = int(sys.argv[3])
-else:
-	n_components = 20
+#do_pca = len(sys.argv) > 3
+#if do_pca:
+#	n_components = int(sys.argv[3])
+#else:
+#	n_components = 20
 
-#rseed = 31212 # only comment out when generating confidence intervals
+rseed = 31212 # only comment out when generating confidence intervals
 
 td_amt = float(sys.argv[1]) # amount of data to use as training; inverse is validation
 test_tenth = int(sys.argv[2]) # assuming a value 1-10
+if len(sys.argv) > 3:
+    rseed = rseed + sys.argv[3] - 1 # so we start with the original and just shift upward
 
 attrfile = "sle_data/rheumatol_extended/attributes.txt"
 goldDataString = "sle_data/rheumatol_extended/gold_data.txt"
