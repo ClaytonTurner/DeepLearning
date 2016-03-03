@@ -2,6 +2,7 @@ import sys
 # Slightly different for NNs as we use Theano mechanisms
 is_nn = False
 if len(sys.argv) > 1:
+    print "is_nn == True"
     is_nn = True
 
 # This array will be used to see which model performed best
@@ -24,9 +25,9 @@ for i in range(10):
     incorrect = 0
     for j in range(len(labels)): # labels and p_values are the same size
         label = float(labels[j].strip())
-        guess = round(float(p_values[j].strip()))
+        guess = float(p_values[j].strip())
         # If/else makes it easier since we can vary the amount of datapoints per fold
-        if label == guess:
+        if label == round(guess):
             correct += 1
         else:
             incorrect += 1
@@ -59,9 +60,9 @@ else:
     incorrect = 0
     for i in range(len(labels)):
         label = float(labels[i].strip())
-        guess = round(float(p_values[i].strip()))
+        guess = float(p_values[i].strip())
         #print label,guess
-        if label == guess:
+        if label == round(guess):
             correct += 1
         else:
             incorrect += 1
@@ -79,6 +80,7 @@ if is_nn:
     for i in range(len(labels)):
         label = labels[i].strip()
         p_value = p_values[i].strip()
+        p_value = p_value[:3] # This is because we have values like 0.000000000e+00
         if p_value == "0.0": # We were right as per Theano
             nn_external_p_values.append(label+"\n")
         else: # We were wrong
@@ -86,7 +88,7 @@ if is_nn:
                 nn_external_p_values.append("1.0\n")
             else:
                 nn_external_p_values.append("0.0\n")
-    f = open(index+"_external_p_values_nn.txt","r")
+    f = open(index+"_external_p_values_nn.txt","w")
     f.write("".join(nn_external_p_values))
     f.close()
 import subprocess

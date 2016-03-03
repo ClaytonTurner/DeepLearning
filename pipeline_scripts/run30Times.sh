@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "Make sure any random seed setting has been commented out\n"
+
 if [ $# -lt 1 ]
   then
     echo "Proper usage: ./run30Times.sh <script>"

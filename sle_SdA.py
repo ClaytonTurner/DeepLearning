@@ -594,7 +594,7 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
     fname = os.path.expanduser("~/DeepLearning/results/"+fold)
     numpy.savetxt(fname+"_labels.txt", best_y_a)
     numpy.savetxt(fname+"_p_values.txt", best_p_values_a)
-    #numpy.savetxt(fname+"_external_p_values.txt", numpy.mean(best_ext_y_pred))
+    numpy.savetxt(fname+"_external_p_values.txt", best_ext_y_pred)
     f = open(fname+"_external_accuracy.txt","w")
     f.write(str(numpy.mean(best_ext_y_pred)))
     f.close()

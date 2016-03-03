@@ -26,7 +26,7 @@ train_set_x = np.concatenate([train_set_x,valid_set_x])
 train_set_y = np.concatenate([train_set_y,valid_set_y])
 
 clf = GaussianNB()
-clf = clf.fit(train_set_x,train_set_y) # maybe try fit_transform
+clf = clf.fit(train_set_x,train_set_y)
 
 probas = clf.predict_proba(test_set_x)
 

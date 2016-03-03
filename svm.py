@@ -25,7 +25,11 @@ test_set_y = np.asarray(test_set_y,dtype=np.float32)
 train_set_x = np.concatenate([train_set_x,valid_set_x])
 train_set_y = np.concatenate([train_set_y,valid_set_y])
 
-clf = svm.SVC(probability=True)
+#k = "rbf"
+k = "linear" # Experimentally best kernel
+#k = "poly"
+#k = "sigmoid"
+clf = svm.SVC(kernel = k,probability=True)
 clf = clf.fit(train_set_x,train_set_y)
 
 probas = clf.predict_proba(test_set_x)
