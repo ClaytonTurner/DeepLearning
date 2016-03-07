@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/DeepLearning.iml" filepath="$PROJECT_DIR$/.idea/DeepLearning.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../Spark/.idea/Spark.iml" filepath="$PROJECT_DIR$/../Spark/.idea/Spark.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../gpuDeepLearning/.idea/gpuDeepLearning.iml" filepath="$PROJECT_DIR$/../gpuDeepLearning/.idea/gpuDeepLearning.iml" />
+    </modules>
+  </component>
+</project>
