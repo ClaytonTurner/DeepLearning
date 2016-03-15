@@ -1,9 +1,14 @@
 import sys
 # Slightly different for NNs as we use Theano mechanisms
 is_nn = False
+is_w2v = False
 if len(sys.argv) > 1:
-    print "is_nn == True"
-    is_nn = True
+    if sys.argv[1] == "w2v":
+        print "is_w2v == True"
+        is_w2v = True
+    else:
+        print "is_nn == True"
+        is_nn = True
 
 # This array will be used to see which model performed best
 # We then look at that model's external test set accuracy
@@ -25,7 +30,10 @@ for i in range(10):
     incorrect = 0
     for j in range(len(labels)): # labels and p_values are the same size
         label = float(labels[j].strip())
-        guess = float(p_values[j].strip())
+        if is_w2v: # We could have stripped out the other p values, but this was faster
+            guess = float(p_values[j].split(",")[0].strip())
+        else:
+            guess = float(p_values[j].strip())
         # If/else makes it easier since we can vary the amount of datapoints per fold
         if label == round(guess):
             correct += 1
@@ -35,7 +43,7 @@ for i in range(10):
 
 # Duplicates don't bother us - we'll just take the first, best model 
 best_fold = fold_accuracies.index(max(fold_accuracies))
-print "Using fold "+str(best_fold+1)+"'s model. Had "+str(float(correct)/(float(correct)+float(incorrect)))+" accuracy"
+print "Using fold "+str(best_fold+1)+"'s model. Had "+str(fold_accuracies[best_fold])+" accuracy"
 if best_fold == 9:
     index = "10"
 else:
@@ -60,7 +68,10 @@ else:
     incorrect = 0
     for i in range(len(labels)):
         label = float(labels[i].strip())
-        guess = float(p_values[i].strip())
+        if is_w2v: # same as earlier
+            guess = float(p_values[i].split(',')[0].strip())
+        else:
+            guess = float(p_values[i].strip())
         #print label,guess
         if label == round(guess):
             correct += 1
