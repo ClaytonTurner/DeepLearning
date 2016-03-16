@@ -21,10 +21,15 @@ from KaggleWord2VecUtility import KaggleWord2VecUtility
 #DATADIR='/home/andersonp/GitHub/DeepLearningMovies/'
 DATADIR='/home/cat200/DeepLearning/word2vec/'
 
-if len(sys.argv) < 1:
+if len(sys.argv) < 2:
     print "Proper usage: python Kaggle_Python_Word2Vec.py <fold>"
     print "<fold> specifies which tenth of the training data is used for testing"
 
+rseed = 31212
+is_ci = False
+if len(sys.argv) > 2: # Then we are doing CI for AUC
+    is_ci = True
+    rseed = rseed + int(sys.argv[2]) - 1
 
 # In[7]:
 
@@ -134,6 +139,17 @@ nSamples = train.shape[0]
 #order = np.random.permutation(nSamples) # come up with a random ordering
 #train1 = shuffle(train) # The saved files are already shuffled once - consistency
 
+# Bootstrapping
+counter = 0
+counter_limit = 18
+for i in range(train.size):
+    #print type(train["sentiment"]),train["sentiment"]
+    if train["sentiment"].values[i] == 1:
+        counter += 1
+        pd.concat([train,train.iloc[[i],:]])
+        pd.concat([unlabeled_train,unlabeled_train.iloc[[i],:]])
+    if counter == counter_limit: break
+
 # This was done before this entire script so let's comment it out
 '''# We need to extract the external set before the test set for CV
 n = 50
@@ -164,7 +180,7 @@ external_test = pd.Series(external_data)
 print external_test
 '''
 # Now let's extract the test set for CV
-np.random.seed(31212) # consistency with other results
+np.random.seed(rseed) # consistency with other results
 order = np.arange(nSamples) # numpy handled shuffling already
 #splitIndex = int(np.round(nSamples*fracTrain))
 splitStart = round((float(fold-1))*(1./10.)*nSamples)
