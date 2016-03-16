@@ -23,7 +23,7 @@ DATADIR='/home/cat200/DeepLearning/word2vec/'
 
 if len(sys.argv) < 2:
     print "Proper usage: python Kaggle_Python_Word2Vec.py <fold>"
-    print "<fold> specifies which tenth of the training data is used for testing"
+    print "<fold> specifies which tenth of the data is used for testing"
 
 rseed = 31212
 is_ci = False
