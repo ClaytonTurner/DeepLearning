@@ -315,8 +315,8 @@ for inx in inxs_pos:
 
 for inx in inxs_neg:
     review = train1["review"].iloc[inx]
-    sentences_neg += KaggleWord2VecUtility.review_to_sentences(review, tokenizer)    
-    
+    sentences_neg += KaggleWord2VecUtility.review_to_sentences(review, tokenizer)
+
 print "Parsing sentences from unlabeled set"
 for review in unlabeled_train["review"]:
     sentences_unlabelled += KaggleWord2VecUtility.review_to_sentences(review, tokenizer)
@@ -376,7 +376,7 @@ print basemodel
 
 # In[26]:
 
-basemodel.build_vocab(sentences) 
+basemodel.build_vocab(sentences)
 
 
 # In[27]:

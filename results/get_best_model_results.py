@@ -108,3 +108,12 @@ if is_nn:
     subprocess.Popen("Rscript ext_auc.R "+str(index)+" nn",shell=True)
 else:
     subprocess.Popen("Rscript ext_auc.R "+str(index),shell=True)
+
+# Generating external auc graphs for paper
+popen_string = "Rscript generate_external_auc_curve.R "+str(index)
+if is_nn:
+    pass
+elif is_w2v:
+    pass
+else:
+    subprocess.Popen(popen_string,shell=True)
