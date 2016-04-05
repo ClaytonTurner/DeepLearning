@@ -1,3 +1,5 @@
+# This file is no longer used as we can only generate a single curve
+
 library(ROCR)
 
 labels <- read.csv("labels.txt",sep="\n",header=F) 
