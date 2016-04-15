@@ -7,6 +7,7 @@ from sklearn.ensemble import ExtraTreesClassifier
 import sys
 
 rseed = 31212 # Only comment out whenever generating CI's
+total_folds = 3
 
 td_amt = float(sys.argv[1])
 test_tenth = int(sys.argv[2])
@@ -83,8 +84,8 @@ def normalize(m):
 data = normalize(data)
 
 rows_in_data = data.shape[0]
-start = int((test_tenth-1)*rows_in_data/10)
-end = int(test_tenth*rows_in_data/10)
+start = int((test_tenth-1)*rows_in_data/total_folds)
+end = int(test_tenth*rows_in_data/total_folds)
 test_matrix = data[start:end]
 test_labels = labels[start:end]
 data = np.delete(data,[x for x in range(start,end)],0)

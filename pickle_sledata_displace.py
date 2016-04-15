@@ -39,6 +39,7 @@ sys.argv:
 #	n_components = 20
 
 rseed = 31212 # only comment out when generating confidence intervals
+total_folds = 10
 
 td_amt = float(sys.argv[1]) # amount of data to use as training; inverse is validation
 test_tenth = int(sys.argv[2]) # assuming a value 1-10
@@ -142,8 +143,8 @@ golddata_matrix = normalize(golddata_matrix)
 
 
 rows_in_gold = golddata_matrix.shape[0] # == len(gold_labels)
-start = int((test_tenth-1)*rows_in_gold/10)
-end = int(test_tenth*rows_in_gold/10)
+start = int((test_tenth-1)*rows_in_gold/total_folds)
+end = int(test_tenth*rows_in_gold/total_folds)
 test_matrix = golddata_matrix[start:end]
 test_labels = gold_labels[start:end]
 golddata_matrix = np.delete(golddata_matrix,[x for x in range(start,end)],0)
