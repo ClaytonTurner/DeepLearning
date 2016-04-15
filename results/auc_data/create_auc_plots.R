@@ -72,4 +72,4 @@ predictions <- c(do.call("cbind",read.csv("w2v_p_values.txt",sep="\n",header=F))
 w2v_roc <- roc(labels,predictions)
 plot(w2v_roc,col="gold",xaxt="n",yaxt="n")
 
-legend("right", legend = c("NB BOW","NB CUI","NN BOW","NN CUI","RF BOW","RF CUI","SVM BOW","SVM CUI","W2V"), col=c("cadetblue1","cadetblue4","chartreuse1","chartreuse4","chocolate1","chocolate4","deeppink1","deeppink4","gold"), lty=1)
+legend("right", legend = c("NB BOW","NB CUI","NN BOW","NN CUI","RF BOW","RF CUI","SVM BOW","SVM CUI","W2V"), col=c("cadetblue1","cadetblue4","chartreuse1","chartreuse4","chocolate1","chocolate4","deeppink1","deeppink4","gold"), lty=1, lwd=5)

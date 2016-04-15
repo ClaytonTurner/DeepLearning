@@ -23,7 +23,9 @@ DATADIR='/home/cat200/DeepLearning/word2vec/'
 
 if len(sys.argv) < 2:
     print "Proper usage: python Kaggle_Python_Word2Vec.py <fold>"
-    print "<fold> specifies which tenth of the data is used for testing"
+    print "<fold> specifies which tenth of the training data is used for testing"
+
+total_folds = 10
 
 rseed = 31212
 is_ci = False
@@ -137,54 +139,60 @@ def shuffle(df):
 fold = int(sys.argv[1])
 nSamples = train.shape[0]
 #order = np.random.permutation(nSamples) # come up with a random ordering
-#train1 = shuffle(train) # The saved files are already shuffled once - consistency
 
-# Bootstrapping
+#train = shuffle(train) # the files themselves are already shuffled once so let's comment this out
+#unlabeled_train = shuffle(unlabeled_train)
+
+# Bootstrapping - before external set for consistency
 counter = 0
 counter_limit = 18
 for i in range(train.size):
     #print type(train["sentiment"]),train["sentiment"]
     if train["sentiment"].values[i] == 1:
         counter += 1
-        pd.concat([train,train.iloc[[i],:]])
-        pd.concat([unlabeled_train,unlabeled_train.iloc[[i],:]])
+        train = pd.concat([train,train.iloc[[i],:]])
+        unlabeled_train = pd.concat([unlabeled_train,unlabeled_train.iloc[[i],:]])
     if counter == counter_limit: break
 
-# This was done before this entire script so let's comment it out
-'''# We need to extract the external set before the test set for CV
+# Outdated comment <- This was done before this entire script so let's comment it out
+# We need to extract the external set before the test set for CV
 n = 50
 pos_count = 0
 neg_count = 0
 external_data = []
-for i in range(1,len(train1.index)+1):
-    subject = train1.ix[i,]
+for i in range(len(train.index)):
+    subject = train.ix[i,]
     diagnosis = subject["sentiment"]
-    print len(subject)
-    if diagnosis == "0":
+    if str(diagnosis) == "0":
         if neg_count < n:
-            #item = train1.pop(subject)
-            del train1[subject]
+	    train.index.delete(i)
+	    unlabeled_train.index.delete(i)
             external_data.append(subject)
+	    neg_count += 1
         else:
             continue
     else:
         if pos_count < n:
-            #item = train1.pop(subject)
-            del train1[subject]
+	    train.index.delete(i)
+	    unlabeled_train.index.delete(i)
             external_data.append(subject)
+	    pos_count += 1
         else:
             continue
     if pos_count + neg_count == 2*n:
         break # because this means we have our external set
+#print "External length: "+str(len(external_data))
 external_test = pd.Series(external_data)
+train = train.reindex()#len(train))
+unlabeled_train = unlabeled_train.reindex()#len(unlabeled_train))
 print external_test
-'''
-# Now let's extract the test set for CV
+
+#Now let's extract the test set for CV
 np.random.seed(rseed) # consistency with other results
 order = np.arange(nSamples) # numpy handled shuffling already
 #splitIndex = int(np.round(nSamples*fracTrain))
-splitStart = round((float(fold-1))*(1./10.)*nSamples)
-splitEnd = round((float(fold))*(1./10.)*nSamples)
+splitStart = round((float(fold-1))*(1./float(total_folds))*nSamples)
+splitEnd = round((float(fold))*(1./float(total_folds))*nSamples)
 #train1 = train.ix[order[:splitIndex],:] 
 train1 = train.ix[:,:] # Full dataset
 #test1 = train.ix[order[splitIndex:],:] # Test set
@@ -196,7 +204,8 @@ train1.drop(train1.index[range(int(splitStart),int(splitEnd))]) # Now let's remo
 
 print train1.shape
 print test1.shape
-
+print external_test[1]
+print external_test.shape
 
 # # Traditional Word Averaging
 
@@ -315,8 +324,8 @@ for inx in inxs_pos:
 
 for inx in inxs_neg:
     review = train1["review"].iloc[inx]
-    sentences_neg += KaggleWord2VecUtility.review_to_sentences(review, tokenizer)
-
+    sentences_neg += KaggleWord2VecUtility.review_to_sentences(review, tokenizer)    
+    
 print "Parsing sentences from unlabeled set"
 for review in unlabeled_train["review"]:
     sentences_unlabelled += KaggleWord2VecUtility.review_to_sentences(review, tokenizer)
@@ -376,7 +385,7 @@ print basemodel
 
 # In[26]:
 
-basemodel.build_vocab(sentences)
+basemodel.build_vocab(sentences) 
 
 
 # In[27]:
