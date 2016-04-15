@@ -12,3 +12,6 @@ results/*external*
 results/30times*
 .ipynb*
 .idea*
+golddata*
+gold_lab*
+results_run*

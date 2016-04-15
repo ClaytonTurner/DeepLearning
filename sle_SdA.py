@@ -374,7 +374,7 @@ class SdA(object):
 
 def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
              pretrain_lr=0.001, training_epochs=1000,
-             dataset='sle.pkl.gz', batch_size=1, fold=1):
+             dataset='sle.pkl.gz', batch_size=1, fold=1,n_hidden=1,iteration=1):
     """
 
     :type learning_rate: float
@@ -414,13 +414,16 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
     numpy_rng = numpy.random.RandomState(89677)
     print '... building the model'
     # construct the stacked denoising autoencoder class
+    hidden_layer_sizes = [250]
+    for i in range(n_hidden-1):
+        hidden_layer_sizes.append(250)
     sda = SdA(
         numpy_rng=numpy_rng,
         #n_ins=28 * 28,
 	#n_ins=train_set_x.shape[0] * train_set_x.shape[1],
 	n_ins=train_set_x.get_value(borrow=True).shape[1],
         #hidden_layers_sizes=[1000, 1000, 1000],
-        hidden_layers_sizes=[250],
+        hidden_layers_sizes=hidden_layer_sizes,
 	#hidden_layers_sizes=[500],
 	#hidden_layers_sizes=[1000],
 	#hidden_layers_sizes=[100,100],
@@ -587,17 +590,13 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
     best_p_values_a = numpy.asarray(best_p_values)
     best_y_a = numpy.asarray(best_y)
     import os
-    if fold < 10:
-      fold = "0"+str(fold)
-    else:
-      fold = str(fold)
-    fname = os.path.expanduser("~/DeepLearning/results/"+fold)
+    fname = os.path.expanduser("~/DeepLearning/results_run_sle_sda_cui/"+str(iteration)+"_"+str(n_hidden)+"_"+str(fold))
     numpy.savetxt(fname+"_labels.txt", best_y_a)
     numpy.savetxt(fname+"_p_values.txt", best_p_values_a)
-    numpy.savetxt(fname+"_external_p_values.txt", best_ext_y_pred)
-    f = open(fname+"_external_accuracy.txt","w")
-    f.write(str(numpy.mean(best_ext_y_pred)))
-    f.close()
+    #numpy.savetxt(fname+"_external_p_values.txt", best_ext_y_pred)
+    #f = open(fname+"_external_accuracy.txt","w")
+    #f.write(str(numpy.mean(best_ext_y_pred)))
+    #f.close()
     print "best logistic values:"
     #f = open("/home/caturner3/DeepLearning/results/learning_over_time_fold"+str(fold)+".csv","w")
     #f.writelines(learning_over_time)
@@ -619,5 +618,7 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
 if __name__ == '__main__':
     import sys
     batch = sys.argv[1]
-    fold = int(sys.argv[2])
-    run_SdA(pretraining_epochs=0,training_epochs=10000,batch_size=int(1),finetune_lr=.2,fold=fold)
+    iteration = int(sys.argv[2])
+    n_hidden = int(sys.argv[3])
+    fold = sys.argv[4]
+    run_SdA(pretraining_epochs=0,training_epochs=10000,batch_size=int(1),finetune_lr=.2,iteration=iteration,n_hidden=n_hidden,fold=fold)
