@@ -49,7 +49,7 @@ if len(sys.argv) > 2:
 #pdb.set_trace()
 
 if BOWs:
-    f = gzip.open("sle.bows_full.pkl.gz","rb")
+    f = gzip.open("sle.bows_bootstrapped.pkl.gz","rb")
     golddata_matrix,gold_labels = pickle.load(f)
     f.close()
 else:
@@ -57,10 +57,11 @@ else:
     gold_labels = np.loadtxt("gold_labels.csv")
 
 def normalize(m):
-    m = m.T 
+    m = m.T
     m = (m - m.min())/np.ptp(m)
-    return m.T 
+    return m.T
 
+golddata_matrix = np.asarray(golddata_matrix)
 golddata_matrix = normalize(golddata_matrix)
 
 test_indices = list(np.loadtxt("indices/test_indices_"+str(iteration)+".csv",dtype="int"))

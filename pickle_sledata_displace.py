@@ -8,6 +8,7 @@ from sklearn.preprocessing import normalize
 from sklearn.ensemble import ExtraTreesClassifier
 import sys
 import random
+
 '''
 pickleArray[0] = train_set
 	pickleArray[0][0] = x 
@@ -52,17 +53,21 @@ if len(sys.argv) > 3:
 #pdb.set_trace()
 
 if BOWs:
-    f = gzip.open("sle.bows_full.pkl.gz","rb")
+    #f = gzip.open("sle.bows_full.pkl.gz","rb")
+    f = gzip.open("sle.bows_bootstrapped.pkl.gz","rb")
     golddata_matrix,gold_labels = pickle.load(f)
     f.close()
+    golddata_matrix = np.asarray(golddata_matrix)
+    print golddata_matrix.shape
+    print len(gold_labels)
 else: # So we're doing CUIs
     golddata_matrix=np.loadtxt("golddata_matrix.csv")
     gold_labels=np.loadtxt("gold_labels.csv")
 
 def normalize(m):
-    m = m.T 
+    m = m.T
     m = (m - m.min())/np.ptp(m)
-    return m.T 
+    return m.T
 
 golddata_matrix = normalize(golddata_matrix)
 
@@ -89,6 +94,12 @@ valid_matrix = clf.transform(valid_matrix)
 test_matrix = clf.transform(test_matrix)
 
 print type(train_matrix)
+print train_matrix.shape
+print train_labels.shape
+print valid_matrix.shape
+print valid_labels.shape
+print test_matrix.shape
+print test_labels.shape
 
 pickleArray = [[train_matrix,train_labels],
 		[valid_matrix,valid_labels],

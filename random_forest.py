@@ -14,7 +14,15 @@ from logistic_sgd import load_data
 tree_counts=[100,300,500]
 iteration = sys.argv[1]
 tree_index = sys.argv[2]
-tree_count = int(tree_counts[tree_index])
+tree_count = int(tree_counts[int(tree_index)])
+fold = sys.argv[3]
+
+if len(sys.argv) > 4:
+    res_string = "results_run_rf_bow"
+else:
+    res_string = "results_run_rf_cui"
+
+print "<iteration> <tree_index> <fold>",iteration,tree_index,fold
 
 dataset = "sle.pkl.gz"
 #datasets = load_data(dataset)
@@ -60,7 +68,8 @@ for proba in probas:
 #	fold = "0"+str(fold)
 #else:
 #	fold = str(fold)
-fname = os.path.expanduser("~/DeepLearning/results_run_rf_cui/"+iteration+"_"+str(tree_count))
+fname = os.path.expanduser("~/DeepLearning/"+res_string+"/"+iteration+"_"+tree_index+"_"+str(fold))
+print fname
 np.savetxt(fname+"_labels.txt",test_set_y,fmt="%s")
 np.savetxt(fname+"_p_values.txt",save_probas,fmt="%s")
 #np.savetxt(fname+"_external_labels.txt",ext_set_y,fmt="%s")
