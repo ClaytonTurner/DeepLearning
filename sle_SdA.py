@@ -590,7 +590,7 @@ def run_SdA(finetune_lr=0.1, pretraining_epochs=15,
     best_p_values_a = numpy.asarray(best_p_values)
     best_y_a = numpy.asarray(best_y)
     import os
-    fname = os.path.expanduser("~/DeepLearning/results_run_sle_sda_bow/"+str(iteration)+"_"+str(n_hidden)+"-"+str(fold))
+    fname = os.path.expanduser("~/DeepLearning/results_run_sle_sda_bow/"+str(iteration)+"_"+str(n_hidden)+"_"+str(fold))
     #fname = os.path.expanduser("~/DeepLearning/results_run_sle_sda_cui/"+str(iteration)+"_"+str(n_hidden)+"_"+str(fold))
     numpy.savetxt(fname+"_labels.txt", best_y_a)
     numpy.savetxt(fname+"_p_values.txt", best_p_values_a)

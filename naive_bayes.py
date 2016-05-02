@@ -53,7 +53,7 @@ for proba in probas:
 #	fold = "0"+str(fold)
 #else:
 #	fold = str(fold)
-fname = os.path.expanduser("~/DeepLearning/results_run_nb_cui/")
+fname = os.path.expanduser("~/DeepLearning/results_run_nb_bow/")
 np.savetxt(fname+"_labels.txt",test_set_y,fmt="%s")
 np.savetxt(fname+"_p_values.txt",save_probas,fmt="%s")
 #np.savetxt(fname+"_external_labels.txt",ext_set_y,fmt="%s")

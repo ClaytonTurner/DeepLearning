@@ -15,12 +15,16 @@ iteration = sys.argv[1]
 #preamble = 'results_run_rf_bow/'
 #preamble = 'results_run_rf_cui/'
 #preamble = 'results_run_sle_sda_cui/'
-preamble = 'results_run_sle_sda_bow/'
+#preamble = 'results_run_sle_sda_bow/'
+#preamble = 'results_run_nb_cui/'# 99.99% sure we don't use this for nb, but screw it
+#preamble = 'results_run_nb_bow/'# ditto
+#preamble = 'results_run_svm_cui/'# ditto
+preamble = 'results_run_svm_bow/'# ditto
 # This array will be used to see which model performed best
 # We then look at that model's external test set accuracy
 models = []
 
-for i in range(1,4): # rf: 0,3. nn: 1,4
+for i in range(0,1): # rf: 0,3. nn: 1,4. nb: 0
 #    for j in range(20):
 #for j in range(20):
 #    for i in range(0,3): # rf: 0,3. nn: 1,4
@@ -41,8 +45,8 @@ for i in range(1,4): # rf: 0,3. nn: 1,4
         for k in range(len(labels)):
             label = labels[k].strip()
             p_value = p_values[k].strip()
-            p_value = str(round(float(p_value[:3]))) # This is because we have values like 0.000000e+00
-            #print p_value
+            p_value = str(round(float(p_value))) # This is because we have values like 0.000000e+00
+            print p_value
             if p_value == "0.0": # We were right as per Theano
                 #nn_actual_p_values.append(label+"\n")
                 correct += 1
