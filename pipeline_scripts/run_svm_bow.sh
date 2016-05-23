@@ -1,5 +1,10 @@
 cd ..
 RESULTS=results_run_svm_bow
 mkdir $RESULTS
-python pickle_sledata_displace_test.py 0 BOWs # 0 just so our script is generalized still 
-python svm.py >> $RESULTS/0_test.out
+
+for i in `seq 0 19`; do
+	cat /dev/null > $RESULTS/${i}_p_values.txt
+	cat /dev/null > $RESULTS/${i}_labels.txt
+	python pickle_sledata_displace_test.py $i BOWs
+	python svm.py $i test >> $RESULTS/${i}_test.out	
+done

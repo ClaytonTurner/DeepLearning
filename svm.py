@@ -59,7 +59,9 @@ for proba in probas:
 #	fold = "0"+str(fold)
 #else:
 #	fold = str(fold)
-fname = os.path.expanduser("~/DeepLearning/results_run_svm_bow/")
-np.savetxt(fname+"_labels.txt",test_set_y,fmt="%s")
-np.savetxt(fname+"_p_values.txt",save_probas,fmt="%s")
+#fname = os.path.expanduser("~/DeepLearning/results_run_svm_bow/")
+fname = os.path.expanduser("~/DeepLearning/results_run_svm_cui/")
+iteration = sys.argv[1]
+np.savetxt(fname+iteration+"_labels.txt",test_set_y,fmt="%s")
+np.savetxt(fname+iteration+"_p_values.txt",save_probas,fmt="%s")
 print "Completed SVM Classifier"

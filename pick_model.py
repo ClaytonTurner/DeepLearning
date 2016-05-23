@@ -12,19 +12,19 @@ if len(sys.argv) > 2:
 
 iteration = sys.argv[1]
 
-#preamble = 'results_run_rf_bow/'
+preamble = 'results_run_rf_bow/'
 #preamble = 'results_run_rf_cui/'
 #preamble = 'results_run_sle_sda_cui/'
 #preamble = 'results_run_sle_sda_bow/'
 #preamble = 'results_run_nb_cui/'# 99.99% sure we don't use this for nb, but screw it
 #preamble = 'results_run_nb_bow/'# ditto
 #preamble = 'results_run_svm_cui/'# ditto
-preamble = 'results_run_svm_bow/'# ditto
+#preamble = 'results_run_svm_bow/'# ditto
 # This array will be used to see which model performed best
 # We then look at that model's external test set accuracy
 models = []
 
-for i in range(0,1): # rf: 0,3. nn: 1,4. nb: 0
+for i in range(0,3): # rf: 0,3. nn: 1,4. nb: 0
 #    for j in range(20):
 #for j in range(20):
 #    for i in range(0,3): # rf: 0,3. nn: 1,4

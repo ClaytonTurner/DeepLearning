@@ -53,9 +53,12 @@ for proba in probas:
 #	fold = "0"+str(fold)
 #else:
 #	fold = str(fold)
-fname = os.path.expanduser("~/DeepLearning/results_run_nb_bow/")
-np.savetxt(fname+"_labels.txt",test_set_y,fmt="%s")
-np.savetxt(fname+"_p_values.txt",save_probas,fmt="%s")
+
+#fname = os.path.expanduser("~/DeepLearning/results_run_nb_bow/")
+fname = os.path.expanduser("~/DeepLearning/results_run_nb_cui/")
+iteration = sys.argv[1]
+np.savetxt(fname+iteration+"_labels.txt",test_set_y,fmt="%s")
+np.savetxt(fname+iteration+"_p_values.txt",save_probas,fmt="%s")
 #np.savetxt(fname+"_external_labels.txt",ext_set_y,fmt="%s")
 #np.savetxt(fname+"_external_p_values.txt",save_ext_probas,fmt="%s")
 print "Completed Naive Bayes Classifier"

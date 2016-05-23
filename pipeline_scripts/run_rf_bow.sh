@@ -1,9 +1,9 @@
 cd ..
-RESULTS=results_run_rf_cui
+RESULTS=results_run_rf_bow
 mkdir $RESULTS
 
 for i in `seq 0 19`; do
-	for tree_index in `seq 1 3`; do
+	for tree_index in `seq 0 2`; do
 		cat /dev/null > $RESULTS/${i}_${tree_index}_p_values.txt
 		cat /dev/null > $RESULTS/${i}_${tree_index}_labels.txt
 		for folds in `seq 0 4`; do
