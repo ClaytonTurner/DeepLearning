@@ -2,6 +2,9 @@
 #models = [1,2,3] # For NN
 models = [0,1,2,3] # for w2v
 
+model_accuracies = []
+finished_models = []
+
 for mo_no in models:
     for ii in range(3):
         for j in range(3):
@@ -17,12 +20,19 @@ for mo_no in models:
             for i in range(len(p_values)):
                 #p = str(round(float(p_values[i].strip())))
                 if p_values[i].split(",")[0].strip() == "0.5":
-                continue 
+                    continue
                 p = str(round(float(p_values[i].split(",")[0].strip())))
                 l = str(float(labels[i].strip()))
                 if p == l:
-                correct += 1
+                    correct += 1
                 else:
-                incorrect += 1
+                    incorrect += 1
+
+            finished_models.append(m_string)
+            model_accuracies.append(float(correct)/(float(correct)+float(incorrect)))
+
             print "Model "+m_string+" ~ correct: "+str(correct)+" | incorrect: "+str(incorrect)
             print "Model "+m_string+" Accuracy: "+str(float(correct)/(float(correct)+float(incorrect)))
+
+best_index = model_accuracies.index(max(model_accuracies))
+print "Best Model: "+str(finished_models[best_index])+" | Accuracy: "+str(model_accuracies[best_index])
